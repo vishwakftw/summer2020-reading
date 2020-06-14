@@ -1,0 +1,249 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+\usepackage{nicefrac}
+
+\setlength{\parskip}{2mm}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\Exp}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\indic}[1]{\mathbf{1}_{\{#1\}}}
+
+\title{Notes for High-Dimensional Probability}
+\author{Vishwak Srinivasan}
+
+\date{}
+
+\begin{document}
+\raggedright
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Preliminaries}
+\subsection{Example on approximate Caratheodory's Theorem}
+
+First, we begin by discussing Caratheodory's Theorem:
+\begin{theorem}[Caratheodory's Theorem]
+\label{thm:approx-caratheodory}
+Consider a convex set \(S \subseteq \real^{p}\). Any point \(x \in S\) can be represented as a convex combination of at most \(p + 1\) distinct points from \(S\).
+\end{theorem}
+
+\begin{remark}
+This result is a popular result in convex analysis, and is tight. The tight lower bound is achieved by a simplex in \(p\) dimensions, which corresponds to \(p + 1\) vertices.
+\end{remark}
+
+Now, we seek an approximation of the above theorem like so: given \(k\) points \(\{x_{i}\}_{i=1}^{k} \subset S\), is it possible to approximate a point \(x \in S\)? We answer this in the affirmative below:
+\begin{theorem}[Approx. Caratheodory's Theorem]
+Given \(x \in S \subseteq \real^{p}\), where \(S\) is convex, there exists a set of \(k\) points \(\{x_{i}\}_{i=1}^{k} \in S\), such that the following holds:
+\begin{equation*}
+\left\|x - \frac{1}{k}\sum_{i=1}^{k}x_{i}\right\|_{2} \leq \frac{\mathrm{diam}(S)}{\sqrt{k}}
+\end{equation*}
+where \(\mathrm{diam}(S) = \sup\limits_{s, t \in S} \|s - t\|_{2}\).
+\end{theorem}
+
+\begin{proof}
+By the fact that \(x \in S\), we know that we can write \(x\) as a convex combination of a subset \(\{z_{i}\}_{i=1}^{m}\) that satisfy \(\mathrm{CONV}(\{z_{i}\}_{i=1}^{m}) = S\), where \(m \leq p + 1\). Let the coefficients be \(\{\lambda_{i}\}_{i=1}^{m}\) where \(\sum\limits_{i=1}^{m} \lambda_{i} = 1\) and \(\lambda_{i} \geq 0\) for all \(i \in [m]\).
+
+Consider a random variable \(Z\) that takes \(m\) different values from the set \(\{z_{i}\}_{i=1}^{m}\) with probability \(\lambda_{i}\). Note that \(\Exp[Z] = x\), since \(\Exp[Z] = \sum\limits_{i=1}^{m} \Pr(Z = z_{i})z_{i} = \sum\limits_{i=1}^{m} \lambda_{i}z_{i} = x\).
+
+We know that for any \(x \in \real^{p}\) and independent random variables \(\{Z_{i}\}_{i=1}^{k}\) that satisfy \(\Exp[Z_{i}] = x\) for all \(i \in [k]\):
+\begin{align*}
+\Exp\left[\left\|x - \frac{1}{k}\sum_{i=1}^{k}Z_{i}\right\|_{2}^{2}\right] &= \Exp\left[\left\|\frac{1}{k}\sum_{i=1}^{k}(x - Z_{i})\right\|_{2}^{2}\right] \\
+&= \frac{1}{k^{2}}\Exp\left[\left\|\sum_{i=1}^{k} (x - Z_{i})\right\|_{2}^{2}\right] \\
+&\overset{(i)}= \frac{1}{k^{2}}\sum_{i=1}^{k}\Exp\left[\left\|x - Z_{i}\right\|_{2}^{2}\right] \\
+&\overset{(ii)}\leq \frac{1}{k^{2}}\sum_{i=1}^{k}\mathrm{diam}(S)^{2} = \frac{\mathrm{diam}(S)^{2}}{k}
+\end{align*}
+Step \((i)\) holds true due to Lemma \ref{lem:zero-mean-norm}. Step \((ii)\) follows from the fact that \(Z_{i}, x \in S\) which implies that \(\|Z_{i} - x\|_{2} \leq \mathrm{diam}(S)\) followed by the fact that \(\Exp[c] = c\) for constant \(c\).
+
+Therefore, there exists a realization of \(\{Z_{i}\}_{i=1}^{k}\), that satisfies:
+\begin{equation*}
+\left\|x - \frac{1}{k}\sum_{i=1}^{k}Z_{i}\right\|_{2} \leq \frac{\mathrm{diam}(S)}{\sqrt{k}}
+\end{equation*}
+\end{proof}
+
+\begin{remark}
+First note the dimension independence in the result. Secondly, in the special case where \(S\) consists of elements with bounded norms i.e., \(\|x\|_{2} \leq B\) for all \(x \in S\), the diameter of the set is bounded by \(2B\) by an application of the triangle inequality. Finally, note that if we have \(k \to \infty\) samples from the set, then our approximation is going to be perfect.
+\end{remark}
+
+The method used to prove Theorem \ref{thm:approx-caratheodory} is called Maurey's Empirical Method.
+
+\subsubsection{Auxiliary Lemmata}
+
+\begin{lemma}
+\label{lem:zero-mean-norm}
+Let \(\{X_{i}\}_{i=1}^{k}\) be a set of independent zero-mean random variables. The following holds true:
+\begin{equation*}
+\Exp\left[\left\|\sum_{i=1}^{k}X_{i}\right\|_{2}^{2}\right] = \sum_{i=1}^{k}\Exp\left[\left\|X_{i}\right\|_{2}^{2}\right]
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+First note that:
+\begin{align*}
+\left\|\sum_{i=1}^{k}X_{i}\right\|_{2}^{2} &= \inner{\sum_{i=1}^{k}X_{i}}{\sum_{j=1}^{k}X_{j}} \\
+&= \sum_{i=1}^{k}\sum_{j=1}^{k}X_{i}^{T}X_{j} \\
+&= \sum_{i=1}^{k}\|X_{i}\|_{2}^{2} + 2\sum_{\substack{i, j = 1 \\ i \neq j}}^{k}X_{i}^{T}X_{j}
+\end{align*}
+
+Taking expectations on both sides:
+\begin{align*}
+\Exp\left[\left\|\sum_{i=1}^{k}X_{i}\right\|_{2}^{2}\right] &= \Exp\left[\sum_{i=1}^{k}\|X_{i}\|_{2}^{2}\right] + 2\Exp\left[\sum_{\substack{i, j = 1 \\ i \neq j}}^{k}X_{i}^{T}X_{j}\right] \\
+&= \sum_{i=1}^{k}\Exp\left[\left\|X_{i}\right\|_{2}^{2}\right] + 2\sum_{\substack{i, j = 1 \\ i \neq j}}^{k} \Exp\left[X_{i}^{T}X_{j}\right]
+\end{align*}
+
+Since \(X_{i}\)s are independent, \(\Exp\left[X_{i}^{T}X_{j}\right] = \Exp\left[X_{i}\right]^{T}\Exp\left[X_{j}\right] = 0\), and this completes the proof.
+\end{proof}
+
+\begin{lemma}
+For all integers \(m \in [1, n]\), we have the following series of inequalities:
+\begin{equation*}
+\left(\frac{n}{m}\right)^{m} \leq \binom{n}{m} \leq \sum_{k=0}^{m}\binom{n}{m} \leq \left(\frac{en}{m}\right)^{m}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+First inequality:
+\begin{equation*}
+\binom{n}{m} m^{m} = \frac{n!}{(n - m)! \cdot m!} m^{m} \geq \frac{n!}{(n - m)!} \geq n^{m} \Rightarrow \binom{n}{m} \geq \left(\frac{n}{m}\right)^{m}
+\end{equation*}
+
+Second inequality:
+\begin{equation*}
+\binom{n}{m} \leq \binom{n}{m} + \sum_{k=0}^{m-1} \binom{n}{k} = \sum_{k=0}^{m}\binom{n}{k}
+\end{equation*}
+
+Third inequality:
+\begin{equation*}
+\left(\frac{m}{n}\right)^{m} \sum_{k=0}^{m}\binom{n}{k} \leq \sum_{k=0}^{m} \binom{n}{k} \left(\frac{m}{n}\right)^{k} \leq \sum_{k=0}^{n} \binom{n}{k} \left(\frac{m}{n}\right)^{k} = \left(1 + \frac{m}{n}\right)^{n} \leq e^{m} \Rightarrow \sum_{k=0}^{m}\binom{n}{k} \leq \left(\frac{en}{m}\right)^{m}
+\end{equation*}
+\end{proof}
+
+\subsection{Quantities and Inequalities associated with RVs}
+
+\begin{itemize}
+\item Expectation: \(\Exp[X]\)
+\item Variance: \(\Var[X] = \Exp[(X - \Exp[X])^{2}]\)
+\item MGF: \(M_{X}(t) = \Exp[e^{tX}]\), \(t \in \real\)
+\item \(p^{th}\) moment: \(\Exp[X^{p}]\) and \(p^{th}\) absolute moment: \(\Exp[|X|^{p}]\)
+\item \(L^{p}\) norm: \(\|X\|_{L^{p}} = \sqrt[p]{\Exp[|X|^{p}]}\)
+\item \(L^{\infty}\) norm: \(\|X\|_{L^{\infty}} = \mathrm{ess} \sup |X|\), where \(\mathrm{ess} \sup |X|\) denotes the supremum over all set with measure not 0. Also note that: \(\mathrm{ess} \sup |X| \leq \sup |X|\).
+\item Covariance: \(\Cov(X, Y) = \Exp[(X - \Exp[X])(Y - \Exp[Y])]\)
+\item CDF: \(F_{X}(t) = \Pr(X \leq t)\), \(t \in \real\)
+\end{itemize}
+
+For a convex function \(f\) and any random variable \(X\), we have by \emph{Jensen's inequality} that:
+\begin{equation*}
+f(\Exp[X]) \leq \Exp[f(X)]
+\end{equation*}
+
+Consequently, for a concave function \(f\) and any random variable \(X\), we have:
+\begin{equation*}
+f(\Exp[X]) \geq \Exp[f(X)]
+\end{equation*}
+
+As a special case, consider \(f(x) : x^{\nicefrac{q}{p}}\) where \(q > p\). Note that \(f\) is convex. Therefore:
+\begin{equation*}
+(\Exp\left[|X|^{p}\right])^{\nicefrac{q}{p}} \leq \Exp\left[|X|^{q}\right] \Rightarrow \|X\|_{L^{p}} \leq \|X\|_{L^{q}}
+\end{equation*}
+
+Another inequality is the \emph{Cauchy-Schwarz inequality}, which states that for any two RVs \(X\) and \(Y\):
+\begin{equation*}
+\Exp[|XY|] \leq \sqrt{\Exp[X^{2}]}\sqrt{\Exp[Y^{2}]} = ||X||_{L^{2}} ||Y||_{L^{2}}
+\end{equation*}
+
+We also have \emph{Holder's inequality} which generalizes \emph{Cauchy-Schwarz} to dual norms as:
+\begin{equation*}
+\Exp[|XY|] \leq ||X||_{L^{p}} ||Y||_{L^{q}} \qquad;\qquad \frac{1}{p} + \frac{1}{q} = 1
+\end{equation*}
+
+The following lemma characterizes the expectation as a quantity involving only tails:
+\begin{lemma}
+\label{lem:tail-expectation}
+Consider a non-negative random variable \(X\). The expectation of this random variable can be written as:
+\begin{equation*}
+\Exp[X] = \int_{0}^{\infty} \Pr(X > t) dt
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+For any \(x \geq 0\), we have that:
+\begin{equation*}
+x = \int_{0}^{\infty} \indic{t < x} dt = \int_{0}^{x} 1 dt + \int_{x}^{\infty} 0 dt
+\end{equation*}
+
+Therefore:
+\begin{align*}
+X = \int_{0}^{\infty} \indic{t < X} dt \Rightarrow \Exp[X] &= \Exp\left[\int_{0}^{\infty} \indic{t < X} dt\right] \\
+& = \int_{0}^{\infty} \int_{-\infty}^{\infty} \indic{t < x} \Pr(X = x) dx dt \\
+& = \int_{0}^{\infty} \int_{t}^{\infty} \Pr(X = x) dx dt \\
+& = \int_{0}^{\infty} \Pr(X > t) dt
+\end{align*}
+\end{proof}
+
+A simple generalization for real-valued random variables from the proof of Lemma \ref{lem:tail-expectation} is as follows:
+\begin{corollary}
+Consider a real valued random variable \(X\). The expectation of this random variable can be written as:
+\begin{equation*}
+\Exp[X] = \int_{0}^{\infty} \Pr(X > t) dt - \int_{-\infty}^{0} \Pr(X < t) dt
+\end{equation*}
+\end{corollary}
+
+An application of Lemma \ref{lem:tail-expectation} is to use it to bound the \(p^{th}\) absolute moments via tails:
+\begin{corollary}
+For any random variable \(X\):
+\begin{equation*}
+\Exp\left[|X|^{p}\right] = \int_{0}^{\infty} pt^{p-1} \Pr(|X| > t) dt
+\end{equation*}
+\end{corollary}
+
+Classical inequalities: Markov and Chebyshev's:
+\begin{lemma}[Markov's Inequality]
+Consider a non-negative random variable \(X\). Then the tails of \(X\) can be bounded as:
+\begin{equation*}
+\Pr(X > t) \leq \frac{\Exp[X]}{t}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+Note that:
+\begin{equation*}
+\Exp[X] = \Exp[X \cdot \indic{X > t}] + \Exp[X \cdot \indic{X \leq t}] \geq \Exp[X \cdot \indic{X > t}] \geq t \Exp[\indic{X > t}] = t \Pr(X > t) \Rightarrow \Pr(X > t) \leq \frac{\Exp[X]}{t}
+\end{equation*}
+\end{proof}
+
+\begin{corollary}[Chebyshev's Inequality]
+Consider a random variable \(X\). Then the probability of deviation from the expectation of \(X\) can be bounded as:
+\begin{equation*}
+\Pr(|X - \Exp[X]| > t) \leq \frac{\Var(X)}{t^{2}}
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+Take \(Y = |X - \Exp[X]|\) as the random variable as apply Markov's inequality:
+\begin{equation*}
+\Pr(Y > t) = \Pr(Y^{2} > t^{2}) \leq \frac{\Exp[(X - \Exp[X])^{2}]}{t^{2}}
+\end{equation*}
+\end{proof}
+
+\begin{remark}
+Note that one can achieve better dependence on \(t\) by using higher moments - provided they exist:
+\begin{equation*}
+\Pr(Y > t) = \Pr(Y^{2k} > t^{2k}) \leq \frac{\Exp[(X - \Exp[X])^{2k}]}{t^{2k}}
+\end{equation*}
+\end{remark}
+
+\end{document}
