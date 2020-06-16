@@ -20,6 +20,8 @@
 \newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
 \newcommand{\indic}[1]{\mathbf{1}_{\{#1\}}}
 
+\newcommand{\calN}{\mathcal{N}}
+
 \title{Notes for High-Dimensional Probability}
 \author{Vishwak Srinivasan}
 
@@ -246,4 +248,94 @@ Note that one can achieve better dependence on \(t\) by using higher moments - p
 \end{equation*}
 \end{remark}
 
+\subsection{Basic Limit Theorems}
+\begin{theorem}[Strong Law of Large Numbers]
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of identically and independently distributed random variables with mean \(\mu\). The quantity \(\bar{X}_{n} = \frac{1}{n}\sum\limits_{i=1}^{n} X_{i}\) satisfies:
+\begin{equation*}
+\bar{X}_{n} \xrightarrow{a.s.} \mu
+\end{equation*}
+as \(n \to \infty\).
+\end{theorem}
+
+Here \(\xrightarrow{a.s.}\) denotes \emph{almost sure convergence}, which is:
+\begin{equation*}
+\Pr\left(\lim_{n \to \infty} \bar{X}_{n} = \mu\right) = 1
+\end{equation*}
+
+There is a \emph{weak law of large numbers}, which can be derived from Chebyshev's Inequality, for distributions with bounded variance. It is stated below:
+\begin{corollary}[Weak Law of Large Numbers]
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of identically and independently distributed random variables with mean \(\mu\) and variance \(\sigma^{2} < \infty\). The quantity \(\bar{X}_{n} = \frac{1}{n}\sum\limits_{i=1}^{n} X_{i}\) satisfies:
+\begin{equation*}
+\bar{X}_{n} \xrightarrow{p} \mu
+\end{equation*}
+where \(\xrightarrow{p}\) denotes \emph{convergence in probability}, which is;
+\begin{equation*}
+\forall \epsilon > 0, \qquad \lim_{n \to \infty} \Pr\left(|\bar{X}_{n} - \mu| > \epsilon\right) = 0
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+First note \(\Exp\left[\bar{X}_{n}\right] = \mu\), and hence \(\Var(\bar{X}_{n}) = \frac{1}{n^{2}}\Var\left(\sum\limits_{i=1}^{n}X_{i}\right) = \frac{1}{n^{2}}\sum\limits_{i=1}^{n}\Var\left(X_{i}\right) = \frac{\sigma^{2}}{n}\).
+
+By Chebyshev's inequality, for any \(\epsilon > 0\):
+\begin{equation*}
+\Pr(|\bar{X}_{n} - \mu| > \epsilon) \leq \frac{\sigma^{2}}{n\epsilon} \Rightarrow \lim_{n \to \infty} \Pr(|\bar{X}_{n} - \mu| > \epsilon) = 0 \enskip (\because \text{Sandwich theorem})
+\end{equation*}
+\end{proof}
+
+\begin{remark}
+This weak result is \emph{weak} because \(\xrightarrow{a.s.}\) implies \(\xrightarrow{p.}\).
+\end{remark}
+
+Next, we state a result that gives the asymptotic distribution of \(\bar{X}_{n}\).
+\begin{theorem}[Central Limit Theorem]
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of identically and independently distributed random variables with mean \(\mu\) and variance \(\sigma^{2} < \infty\). Define \(\bar{X}_{n} = \frac{1}{n}\sum\limits_{i=1}^{n} X_{i}\). Then:
+\begin{equation*}
+\frac{\sqrt{n}(\bar{X}_{n} - \mu)}{\sigma} \xrightarrow{d} \calN(0, 1) \qquad \text{as } n \to \infty
+\end{equation*}
+\end{theorem}
+
+While this result states that the deviation between the sample mean and population mean is 0 in the limit, we can give some non asymptotic guarantees on the deviation as follows:
+\begin{lemma}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of identically and independently distributed random variables with mean \(\mu\) and variance \(\sigma^{2} < \infty\). We have that:
+\begin{equation*}
+\Exp\left[\left|\frac{1}{n}\sum_{i=1}^{n}X_{i} - \mu\right|\right] = O\left(\frac{1}{\sqrt{n}}\right)
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+By Jensen's inequality:
+\begin{equation*}
+\Exp\left[|Z|\right] \leq \sqrt{\Exp\left[Z^{2}\right]}
+\end{equation*}
+(Note that this also follows from the fact that \(\|Z\|_{L^{1}} \leq \|Z\|_{L^{2}}\))
+
+Therefore:
+\begin{align*}
+\Exp\left[\left|\frac{1}{n}\sum_{i=1}^{n}X_{i} - \mu\right|\right] &\leq \sqrt{\Exp\left[\left(\frac{1}{n}\sum_{i=1}^{n}X_{i} - \mu\right)^{2}\right]} \\
+&= \sqrt{\Exp\left[\left(\frac{1}{n}\sum_{i=1}^{n}(X_{i} - \mu)\right)^{2}\right]} \\
+&= \sqrt{\frac{1}{n^{2}}\Exp\left[\left(\sum_{i=1}^{n}(X_{i} - \mu)\right)^{2}\right]} \\
+&\overset{(i)}= \sqrt{\frac{1}{n^{2}}\sum_{i=1}^{n}\Exp\left[(X_{i} - \mu)^{2}\right]} \\
+&= \sqrt{\frac{\sigma^{2}}{n}} = O\left(\frac{1}{\sqrt{n}}\right)
+\end{align*}
+where Step \((i)\) follows from Lemma \ref{lem:zero-mean-norm} for 1-D random variables.
+\end{proof}
+
+A special case of the Central Limit Theorem is to provide approximate distributions for binomial distributions. Recall that the binomial distribution \(\mathrm{Bin}(n, p)\) is the sum of \(n\) independent Bernoulli distribution with parameter \(p\). Therefore, we get that:
+\begin{equation*}
+\frac{\sqrt{n}(\bar{X}_{n} - \mu)}{\sigma} = \frac{n\bar{X}_{n} - n\mu}{\sigma\sqrt{n}} = \frac{B_{n, p} - np}{\sqrt{n}\sqrt{p(1 - p)}} \xrightarrow{d} \calN(0, 1) \enskip \text{as } n \to \infty
+\end{equation*}
+where \(X_{i} \sim \mathrm{Ber}(p), i \in [n]\) and \(B_{n, p} \sim \mathrm{Bin}(n, p)\). This means that \(B_{n, p} \xrightarrow{d} \calN(np, np(1 - p))\) as \(n \to \infty\).
+
+However, there is a better limit theorem in the regime where \(p \to \infty, n \to \infty\) and \(np = \lambda > 0\). This is the Poisson Limit Theorem:
+\begin{theorem}[Poisson Limit Theorem]
+Consider \(\{X_{i}\}_{i=1}^{n}\) to be \(n\) independent Bernoulli variables with parameters \(p_{i}\). Then, for \(n \to \infty\), \(\max\limits_{i \in [n]} p_{i} \to 0\) and \(\sum_{i=1}^{n}p_{i} = \lambda > 0\), we have that:
+\begin{equation*}
+\sum_{i=1}^{n}X_{i} \xrightarrow{d} \mathrm{Poi}(\lambda)
+\end{equation*}
+\end{theorem}
+
+\begin{remark}
+In the special case when all \(p_{i}\)s are equal, we obtain the same result with \(n \to \infty\), \(p \to 0\) and \(np = \lambda > 0\) as described informally earlier.
+\end{remark}
 \end{document}
