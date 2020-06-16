@@ -289,6 +289,7 @@ This weak result is \emph{weak} because \(\xrightarrow{a.s.}\) implies \(\xright
 
 Next, we state a result that gives the asymptotic distribution of \(\bar{X}_{n}\).
 \begin{theorem}[Central Limit Theorem]
+\label{thm:clt}
 Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of identically and independently distributed random variables with mean \(\mu\) and variance \(\sigma^{2} < \infty\). Define \(\bar{X}_{n} = \frac{1}{n}\sum\limits_{i=1}^{n} X_{i}\). Then:
 \begin{equation*}
 \frac{\sqrt{n}(\bar{X}_{n} - \mu)}{\sigma} \xrightarrow{d} \calN(0, 1) \qquad \text{as } n \to \infty
@@ -329,7 +330,7 @@ where \(X_{i} \sim \mathrm{Ber}(p), i \in [n]\) and \(B_{n, p} \sim \mathrm{Bin}
 
 However, there is a better limit theorem in the regime where \(p \to \infty, n \to \infty\) and \(np = \lambda > 0\). This is the Poisson Limit Theorem:
 \begin{theorem}[Poisson Limit Theorem]
-Consider \(\{X_{i}\}_{i=1}^{n}\) to be \(n\) independent Bernoulli variables with parameters \(p_{i}\). Then, for \(n \to \infty\), \(\max\limits_{i \in [n]} p_{i} \to 0\) and \(\sum_{i=1}^{n}p_{i} = \lambda > 0\), we have that:
+Consider \(\{X_{i}\}_{i=1}^{n}\) to be \(n\) independent Bernoulli variables with parameters \(p_{i}\). Then, for \(n \to \infty\), \(\max\limits_{i \in [n]} p_{i} \to 0\) and \(\sum\limits_{i=1}^{n}p_{i} = \lambda > 0\), we have that:
 \begin{equation*}
 \sum_{i=1}^{n}X_{i} \xrightarrow{d} \mathrm{Poi}(\lambda)
 \end{equation*}
@@ -338,4 +339,73 @@ Consider \(\{X_{i}\}_{i=1}^{n}\) to be \(n\) independent Bernoulli variables wit
 \begin{remark}
 In the special case when all \(p_{i}\)s are equal, we obtain the same result with \(n \to \infty\), \(p \to 0\) and \(np = \lambda > 0\) as described informally earlier.
 \end{remark}
+
+\newpage
+
+\section{Concentration inequalities}
+\subsection{Basic Gaussian Inequalities}
+\begin{lemma}[Mill's inequalities]
+Let \(g \sim \calN(0, 1)\). We have the following lower and upper bounds for the tail \(\Pr(g > t)\), \(t > 0\) as follows:
+\begin{equation*}
+\left(\frac{1}{t} - \frac{1}{t^{3}}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} \leq \Pr(g > t) \leq \frac{1}{t}\cdot\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+First, the upper bound:
+\begin{align*}
+\Pr(g > t) &= \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} e^{-\nicefrac{x^{2}}{2}} dx \\
+&= \frac{1}{t} \cdot \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} te^{-\nicefrac{x^{2}}{2}} dx \\
+&\leq \frac{1}{t} \cdot \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} xe^{-\nicefrac{x^{2}}{2}} dx \\
+&= \frac{1}{t} \cdot \frac{1}{\sqrt{2\pi}}\int_{\nicefrac{t^{2}}{2}}^{\infty} ye^{-y} dy \qquad \left(\because y = \frac{x^{2}}{2}\right)\\
+&= \frac{1}{t} \cdot \frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
+\end{align*}
+
+Second, the lower bound:
+\begin{align*}
+\Pr(g > t) &= \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} e^{-\nicefrac{x^{2}}{2}} dx \\
+&\geq \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} \left(1 - \frac{3}{x^{4}}\right)e^{-\nicefrac{x^{2}}{2}} dx \qquad \left(\because 1 - \frac{3}{x^{4}} \leq 1 \enskip \forall \enskip x > 0\right) \\
+&\geq \left(\frac{1}{t} - \frac{1}{t^{3}}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
+\end{align*}
+\end{proof}
+
+\begin{remark}
+Note that one can get tail bounds for \(\calN(0, \sigma^{2})\) by simply reparameterising the integrals as:
+\begin{equation*}
+\left(\frac{\sigma}{t} - \frac{\sigma}{t^{3}}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} \leq \Pr(g > t) \leq \frac{\sigma}{t}\cdot\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
+\end{equation*}
+\end{remark}
+
+The Central Limit Theorem (Theorem \ref{thm:clt}) states that averages tend in distribution to a Gaussian. But what can be said about the distribution function itself? The following theorem gives this result:
+\begin{theorem}[Berry-Esseen CLT]
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of identically and independently distributed random variables with mean \(\mu\) and variance \(\sigma^{2} < \infty\). Define \(\bar{X}_{n} = \frac{1}{n}\sum\limits_{i=1}^{n} X_{i}\) and \(\bar{Z}_{n} = \sqrt{n}\frac{\bar{X}_{n} - \mu}{\sigma}\). Then:
+\begin{equation*}
+\left|\Pr(\bar{Z}_{n} > t) - \Pr(g > t))\right| \leq \frac{\rho}{\sqrt{n}}
+\end{equation*}
+where \(\rho = \frac{\Exp\left[|X_{i} - \mu|^{3}\right]}{\sigma^{3}}\), \(i \in [n]\) and \(g \sim \calN(0, 1)\).
+\end{theorem}
+
+\begin{remark}
+This theorem basically states that the error of approximation scales as \(O\left(\frac{1}{\sqrt{n}}\right)\), which is bad, since we can't always leverage the normal approximation from the central limit theorem always.
+\end{remark}
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+Let \(g \sim \calN(0, 1)\). For \(t \geq 1\), we have that:
+\begin{equation*}
+\Exp\left[g^{2} \indic{g > t}\right] = \frac{t}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} + \Pr(g > t) \leq \left(t + \frac{1}{t}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+\Exp\left[g^{2} \indic{g > t}\right] &= \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} x^{2} \indic{x > t} e^{-\nicefrac{x^{2}}{2}} dx \\
+&= \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} x^{2} e^{-\nicefrac{x^{2}}{2}} dx \\
+&= \frac{1}{\sqrt{2\pi}}\left(\left.\left(x \cdot e^{-x}\right)\right\rvert_{\nicefrac{t^{2}}{2}}^{\infty} + \int_{t}^{\infty} e^{-\nicefrac{x^{2}}{2}}dx\right) \qquad \left(\because \text{int. by parts with } f(x) = x, g(x) = xe^{-\nicefrac{x^{2}}{2}}\right) \\
+&= \frac{t}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} + \Pr(g > t) \\
+&\leq \frac{t}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} + \frac{1}{t}\cdot \frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} \\
+&= \left(t + \frac{1}{t}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
+\end{align*}
+\end{proof}
+
 \end{document}
