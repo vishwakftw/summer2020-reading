@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+\usepackage{nicefrac}
+
+\setlength{\parskip}{2mm}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\theoremstyle{defintiion}
+\newtheorem{definition}{Definition}
+
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\Exp}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\indic}[1]{\mathbf{1}_{\{#1\}}}
+\newcommand{\trace}{\mathrm{trace}}
+
+\newcommand{\eparam}{\widehat{\theta}}
+\newcommand{\tparam}{\theta^{\star}}
+
+\title{Fast Mean Estimation with Sub-Gaussian Rates}
+\author{Cherapanamjeri, Flammarion, Bartlett}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\raggedright
+
+\section{Introduction}
+\subsection{Goal}
+To obtain high probability mean estimates when only the existence of the \(2^{nd}\) moment is known. This is also called the \emph{heavy tailed} setting, where higher order moments from the sampling distribution need not exist.
+
+\subsection{Existing results}
+Consider the estimator to be the sample mean \(\eparam = \frac{1}{n}\sum\limits_{i=1}^{n}X_{i}\) where \(\{X_{i}\}_{i=1}^{n}\) are sampled from a distribution \(P\) with only finite \(2^{nd}\) moment and mean \(\tparam\). Markov's inequality gives:
+\begin{equation*}
+\Pr(||\eparam - \tparam||_{2} > t) \leq \frac{\Exp[||\eparam - \tparam||^{2}_{2}]}{t^{2}}
+\end{equation*}
+
+Note that \(\eparam - \tparam = \frac{1}{n}\sum\limits_{i=1}^{n}(X_{i} - \tparam)\) and hence:
+\begin{equation*}
+||\eparam - \tparam||_{2}^{2} = \frac{1}{n^{2}}\sum_{i=1}^{n} ||X_{i} - \tparam||_{2}^{2} + \frac{1}{n}\sum_{\substack{i, j = 1 \\ i \neq j}}^{n} (X_{i} - \tparam)^{T}(X_{j} - \tparam) \Rightarrow \Exp[||\eparam - \tparam||_{2}^{2}] = \frac{1}{n^{2}}\sum_{i=1}^{n} \Exp\left[||X_{i} - \tparam||_{2}^{2}\right]
+\end{equation*}
+
+and since \(\Exp\left[||X_{i} - \tparam||_{2}^{2}\right] = \Exp\left[\trace(X_{i} - \tparam)(X_{i} - \tparam)^{T}\right] = \Sigma\), we get:
+\begin{equation*}
+\Exp[||\eparam - \tparam||_{2}^{2}] = \frac{\trace(\Sigma)}{n}
+\end{equation*}
+therefore leading to:
+\begin{equation*}
+\Pr\left(||\eparam - \tparam||_{2} > \sqrt{\frac{\trace(\Sigma)}{n\delta}}\right) \leq \delta
+\end{equation*}
+which corresponds to: with probability at least \(1 - \delta\):
+\begin{equation*}
+||\eparam - \tparam||_{2} \leq \sqrt{\frac{\trace(\Sigma)}{n\delta}}
+\end{equation*}
+
+In contrast, when \(P\) is Gaussian, we get:
+\begin{equation*}
+\Pr\left(||\eparam - \tparam||_{2} > O\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{||\Sigma||_{2}\log(\nicefrac{1}{\delta})}{n}}\right)\right) \leq \delta
+\end{equation*}
+
+To show this, consider \(Z_{i} = X_{i} - \tparam\) for all \(i \in [n]\). Then \(||\eparam - \tparam||_{2} = \left\|\frac{1}{n}\sum\limits_{i=1}^{n}Z_{i}\right\|_{2}\), where \(Z_{i}\)s are zero mean Gaussian RVs with covariance \(\Sigma\). Note that \(Z_{i} = \Sigma^{\nicefrac{1}{2}}Y_{i}\) for all \(i \in [n]\) where \(Y_{i}\)s are standard multivariate Gaussian RVs. Now, we have that:
+\begin{equation*}
+|||Z_{i} - Z'_{i}||_{2} \leq ||Z_{i} - Z'_{i}||_{2} \leq ||\Sigma^{\nicefrac{1}{2}}(Y_{i} - Y'_{i})||_{2} \leq ||\Sigma^{\nicefrac{1}{2}}||_{2}||Y_{i} - Y'_{i}||_{2}
+\end{equation*}
+
+which shows that \(||Z_{i}||\) is a \(||\Sigma^{\nicefrac{1}{2}}||_{2}\)-Lipschitz function of \(Y_{i}\). By a Lipschitz concentration lemma due to Tsirelson, Ibragimov and Sudakov, we have:
+\begin{equation*}
+\Pr\left(\left\|\frac{1}{n} \sum_{i=1}^{n} Z_{i}\right\|_{2} - \Exp\left[\left\|\frac{1}{n} \sum_{i=1}^{n} Z_{i}\right\|_{2}\right] > t\right) \leq \exp\left(-\frac{nt^{2}}{2||\Sigma||_{2}}\right)
+\end{equation*}
+leading to:
+\begin{equation*}
+\Pr\left(\left\|\frac{1}{n} \sum_{i=1}^{n} Z_{i}\right\|_{2} > \Exp\left[\left\|\frac{1}{n} \sum_{i=1}^{n} Z_{i}\right\|_{2}\right] + t\right) \leq \exp\left(-\frac{nt^{2}}{2||\Sigma||_{2}}\right)
+\end{equation*}
+
+and with probability at least \(1 - \delta\):
+\begin{multline*}
+||\eparam - \tparam||_{2} \leq \Exp[||\eparam - \tparam||_{2}] + \sqrt{\frac{2||\Sigma||_{2}\log(\nicefrac{1}{\delta})}{n}} \leq \sqrt{\Exp[||\eparam - \tparam||_{2}^{2}]} + \sqrt{\frac{2||\Sigma||_{2}\log(\nicefrac{1}{\delta})}{n}} \\\leq \sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{2||\Sigma||_{2}\log(\nicefrac{1}{\delta})}{n}}
+\end{multline*}
+
+Lugosi and Mendelson showed that with only bounded \(2^{nd}\) moment, this rate can be achieved, but the estimator proposed is intractable.
+
+\end{document}
