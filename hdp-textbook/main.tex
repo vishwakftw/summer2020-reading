@@ -21,6 +21,7 @@
 \newcommand{\indic}[1]{\mathbf{1}_{\{#1\}}}
 
 \newcommand{\calN}{\mathcal{N}}
+\newcommand{\calE}{\mathcal{E}}
 
 \title{Notes for High-Dimensional Probability}
 \author{Vishwak Srinivasan}
@@ -367,6 +368,21 @@ Second, the lower bound:
 &\geq \frac{1}{\sqrt{2\pi}}\int_{t}^{\infty} \left(1 - \frac{3}{x^{4}}\right)e^{-\nicefrac{x^{2}}{2}} dx \qquad \left(\because 1 - \frac{3}{x^{4}} \leq 1 \enskip \forall \enskip x > 0\right) \\
 &\geq \left(\frac{1}{t} - \frac{1}{t^{3}}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
 \end{align*}
+
+An alternative proof for the lower bound can be obtained as follows. First note that for \(\phi(z) = \frac{1}{\sqrt{2\pi}}e^{-\nicefrac{z^{2}}{2}}\), we have:
+\begin{equation*}
+\phi'(z) = \frac{1}{\sqrt{2\pi}} \cdot -ze^{\nicefrac{-z^{2}}{2}} = -z\phi(z)
+\end{equation*}
+
+Therefore:
+\begin{align*}
+\Pr(g > t) &= \int_{t}^{\infty} \phi(x) dx \\
+&= \int_{t}^{\infty} -\frac{\phi'(x)}{x} dx \\
+&= \left. -\frac{1}{x}\phi(x)\right|_{t}^{\infty} - \int_{t}^{\infty} \frac{1}{x^{2}}\phi(x) dx \qquad \left(\because \text{int. by parts with } f(x) = -\frac{1}{x}, g(x) = \phi'(x)\right)\\
+&= \frac{\phi(t)}{t} + \int_{t}^{\infty} \frac{1}{x^{3}}\phi'(x) dx \\
+&= \frac{\phi(t)}{t} + \left.\frac{\phi(x)}{x^{3}}\right|_{t}^{\infty} + \underbrace{\int_{t}^{\infty} \frac{3}{x^{4}}\phi(x) dx}_{\geq 0} \qquad \left(\because \text{int. by parts with } f(x) = -\frac{1}{x^{3}}, g(x) = \phi'(x)\right)\\
+&\geq \frac{\phi(t)}{t} - \frac{\phi(t)}{t^{3}}
+\end{align*}
 \end{proof}
 
 \begin{remark}
@@ -408,4 +424,184 @@ Let \(g \sim \calN(0, 1)\). For \(t \geq 1\), we have that:
 \end{align*}
 \end{proof}
 
+\subsection{Hoeffding's Inequality}
+First, we describe a simple bounded random variable namely the Rademacher random variable. \(X\) with support \(\{-1, +1\}\) is said to be distributed w.r.t. a Rademacher distribution if:
+\begin{equation*}
+\Pr(X = +1) = \Pr(X = -1) = \frac{1}{2}
+\end{equation*}
+
+Let's discuss about the basic quantities attributed to a random variable. Note that \(\Exp[X] = 0\) and \(\Var[X] = \frac{1}{2}\). Also the moment generating function is:
+\begin{equation*}
+M_{X}(t) = \Exp\left[e^{tX}\right] = \frac{1}{2}e^{t} + \frac{1}{2}e^{-t} = \cosh(t)
+\end{equation*}
+
+We have the first concentration inequality for these random variables.
+\begin{theorem}
+\label{thm:rademacher-hoeffding}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) i.i.d. Rademacher random variables. Then, for any \(a \in \real^{n}\) we have:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n}a_{i}X_{i} > t\right) \leq \exp\left(-\frac{t^{2}}{2||a||_{2}^{2}}\right)
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Let's begin with Markov's inequality:
+\begin{align*}
+\Pr\left(\sum_{i=1}^{n} a_{i}X_{i} > t\right) &= \Pr\left(\exp\left(s \cdot \sum_{i=1}^{n} a_{i}X_{i}\right) > \exp(s \cdot t)\right) \qquad (s > 0)\\
+&\overset{(i)}\leq \frac{\Exp\left[\exp\left(s \cdot \sum\limits_{i=1}^{n} a_{i}X_{i}\right)\right]}{\exp(st)} \\
+&= \frac{1}{\exp(st)} \Exp\left[\prod_{i=1}^{n} \exp(s \cdot a_{i}X_{i})\right] \\
+&\overset{(ii)}= \frac{1}{\exp(st)} \prod_{i=1}^{n}\Exp\left[\exp(s \cdot a_{i}X_{i})\right] \\
+&\overset{(iii)}= \frac{1}{\exp(st)} \prod_{i=1}^{n}\cosh(s\cdot a_{i}) \\
+&\overset{(iv)}\leq \frac{1}{\exp(st)} \prod_{i=1}^{n}\exp\left(\frac{s^{2}a_{i}^{2}}{2}\right) \\
+&= \frac{1}{\exp(st)} \exp\left(\frac{s^{2}||a||_{2}^{2}}{2}\right)
+\end{align*}
+
+Step \((i)\) uses Markov's inequality over \(Y = \exp\left(s \cdot \sum\limits_{i=1}^{n} a_{i}X_{i}\right)\). Step \((ii)\) uses the fact that \(X_{i}\)s are independent, and Step \((iii)\) uses the MGF derived earlier. Step \((iv)\) can be attributed to Lemma \ref{lem:cosh-upper}.
+
+Therefore, we have shown for any \(s > 0\) that:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} a_{i}X_{i} > t\right) \leq \exp\left(s^{2}\frac{||a||_{2}^{2}}{2} - st\right)
+\end{equation*}
+
+To obtain the tighest / smallest upper bound, we minimize the RHS. The minimizer of the quadratic: \(s^{2}\frac{||a||_{2}^{2}}{2} - st\) w.r.t \(s\) is \(\frac{t}{||a||_{2}^{2}}\), resulting in:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} a_{i}X_{i} > t\right) \leq \exp\left(-\frac{t^{2}}{2||a||_{2}^{2}}\right)
+\end{equation*}
+\end{proof}
+
+\begin{remark}
+Note that the first step generally holds for any invertible function \(f\). We used such a trick in proving Chebyshev's inequality. Also note that since \(\Exp[X_{i}] = 0\) for all \(i \in [n]\), we didn't have an explicit mean term.
+
+Also, in the case where \(a_{i} = \frac{1}{n}\) i.e., we care about the concentration of the sample average to the mean, we get:
+\begin{equation*}
+\Pr\left(\bar{X}_{n} > t\right) \leq \exp\left(-\frac{nt^{2}}{2}\right)
+\end{equation*}
+
+Generally, high probability guarantees are given by setting the RHS to a confidence parameter \(\delta\), like so:
+\begin{equation*}
+\bar{X}_{n} \leq \sqrt{\frac{2}{n}\log\left(\frac{1}{\delta}\right)} \qquad \text{w. p. } \geq 1 - \delta
+\end{equation*}
+
+Fix the error to \(\epsilon\). Smaller the \(\delta\), the more confident the estimate, but requires more samples.
+\end{remark}
+
+There is a two sided version to this inequality as well, and the stated below:
+\begin{corollary}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) i.i.d. Rademacher random variables. Then, for any \(a \in \real^{n}\) we have:
+\begin{equation*}
+\Pr\left(\left|\sum_{i=1}^{n}a_{i}X_{i}\right| > t\right) \leq 2\exp\left(-\frac{t^{2}}{2||a||_{2}^{2}}\right)
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+Simple probability states that if for two events \(A\) and \(B\) such that \(A \Rightarrow B\), then \(\Pr(A) \leq \Pr(B)\). Therefore:
+\begin{gather*}
+\left|\sum_{i=1}^{n}a_{i}X_{i}\right| > t \Rightarrow \sum_{i=1}^{n}a_{i}X_{i} > t \vee \sum_{i=1}^{n}a_{i}X_{i} < -t \\
+\Rightarrow \Pr\left(\left|\sum_{i=1}^{n}a_{i}X_{i}\right| > t\right) \leq \Pr\left(\sum_{i=1}^{n}a_{i}X_{i} > t \vee \sum_{i=1}^{n}a_{i}X_{i} < -t\right) \leq \Pr\left(\sum_{i=1}^{n}a_{i}X_{i} > t\right) + \Pr\left(\sum_{i=1}^{n}a_{i}X_{i} < -t\right) \\
+\Rightarrow \Pr\left(\left|\sum_{i=1}^{n}a_{i}X_{i}\right| > t\right) \leq 2\exp\left(-\frac{t^{2}}{2||a||_{2}^{2}}\right)
+\end{gather*}
+\end{proof}
+
+An interesting application of this inequality is as follows: say that you have a set of objects of two kinds, equally probably occuring. If you want to provide high probability guarantees on the number of objects of one kind, then you could use it as follows. For each object, assign \(Z_{i} = 1\) if the object is of the kind you want and \(0\) otherwise. Now, \(S_{n} = \sum\limits_{i=1}^{n} Z_{i}\) is the number of objects of the kind you desire. However, \(Z_{i}\) is supported on \(\{0, 1\}\), which means you would have to reparameterize. Note that:
+\begin{equation*}
+\Pr(S_{n} > t) = \Pr(2S - n > 2t - n) = \Pr\left(\sum_{i=1}^{n}(2Z_{i} - 1) > 2t - n\right) \leq \exp\left(-\frac{(2t - n)^{2}}{2n}\right)
+\end{equation*}
+
+So, if you anticipated having at least \(\frac{3}{4}n\) objects of the kind you want, then this would happen with probability at most \(e^{-\nicefrac{n}{8}}\).
+
+Now the derivation above has given an idea of how to obtain bounds for \emph{bounded random variables} - of which the Rademacher random variable is an example. Below, we have a generalized theorem:
+\begin{theorem}
+\label{thm:bounded-hoeffding}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) independent bounded random variables i.e., every \(X_{i}\) satisfies \(X_{i} \in [l_{i}, u_{i}]\). Then, we have that:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n}(X_{i} - \Exp[X_{i}]) > t\right) \leq \exp\left(-\frac{2t^{2}}{||u - l||_{2}^{2}}\right)
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+
+The standard series of steps used in the proof of Theorem \ref{thm:rademacher-hoeffding} yields:
+\begin{align*}
+\Pr\left(\sum_{i=1}^{n}(X_{i} - \Exp[X_{i}]) > t\right) &= \Pr\left(\exp\left(s \cdot \sum_{i=1}^{n}(X_{i} - \Exp[X_{i}])\right) > \exp(st)\right) \qquad (s > 0)\\
+&\leq \frac{1}{\exp(st)}\Exp\left[\exp\left(s \cdot \sum_{i=1}^{n}(X_{i} - \Exp[X_{i}])\right)\right] \\
+&\leq \frac{1}{\exp(st)}\prod_{i=1}^{n}\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]
+\end{align*}
+
+To bound \(\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]\): let \(Z_{i} = X_{i} - \Exp[X_{i}]\) for \(i \in [n]\). Therefore, we focus on the quantity \(\Exp\left[\exp(s \cdot Z_{i})\right]\). Consider \(Z'_{i}\) to be an independent copy of \(Z_{i}\)
+\begin{equation*}
+\Exp_{Z_{i}}\left[\exp(s \cdot Z_{i})\right] = \Exp_{Z_{i}}\left[\exp(s \cdot (Z_{i} - \Exp_{Z'_{i}}[Z'_{i}]))\right] = \Exp_{Z_{i}}\left[\exp(s \cdot (\Exp_{Z'_{i}}[Z_{i} - Z'_{i}]))\right] \leq \Exp_{Z_{i}, Z'_{i}}\left[\exp\left(s \cdot (Z_{i} - Z'_{i})\right)\right]
+\end{equation*}
+
+Now, we have by symmetricity:
+\begin{equation*}
+\Exp_{Z_{i}, Z'_{i}}\left[\exp\left(s \cdot (Z_{i} - Z'_{i})\right)\right] = \Exp_{\epsilon \sim \mathrm{Rad}}\left[\Exp_{Z_{i}, Z'_{i}}\left[\exp\left(s\epsilon(Z_{i} - Z'_{i})\right)\right]\right] = \Exp_{Z_{i}, Z'_{i}}\left[\Exp_{\epsilon \sim \mathrm{Rad}}\left[\exp\left(\epsilon \cdot s(Z_{i} - Z'_{i})\right)\right]\right]
+\end{equation*}
+We showed via Lemma \ref{lem:cosh-upper} that:
+\begin{equation*}
+\Exp_{\epsilon \sim \mathrm{Rad}}\left[\exp\left(\epsilon \cdot s(Z_{i} - Z'_{i})\right)\right] \leq \exp\left(\frac{s^{2}(Z_{i} - Z'_{i})^{2}}{2}\right) \leq \exp\left(\frac{s^{2}(u_{i} - l_{i})^{2}}{2}\right)
+\end{equation*}
+and therefore:
+\begin{equation*}
+\Exp_{Z_{i}}\left[\exp(s \cdot Z_{i})\right] \leq \exp\left(\frac{s^{2}(u_{i} - l_{i})^{2}}{2}\right)
+\end{equation*}
+
+Therefore, we obtain:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n}(X_{i} - \Exp[X_{i}]) > t\right) \leq \frac{1}{\exp(st)}\exp\left(\frac{s^{2}||u - l||_{2}^{2}}{2}\right)
+\end{equation*}
+
+From the proof of Theorem \ref{thm:rademacher-hoeffding}, with \(a = u - l\), we get:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n}(X_{i} - \Exp[X_{i}]) > t\right) \leq \exp\left(-\frac{t^{2}}{2||u - l||_{2}^{2}}\right)
+\end{equation*}
+
+Note the sub-optimal constant. Hoeffding showed that one can obtain a better bound on the moments as:
+\begin{equation*}
+\Exp_{Z_{i}}\left[\exp(s \cdot Z_{i})\right] \leq \exp\left(\frac{s^{2}(u_{i} - l_{i})^{2}}{8}\right)
+\end{equation*}
+which leads to:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n}(X_{i} - \Exp[X_{i}]) > t\right) \leq \exp\left(-\frac{2t^{2}}{||u - l||_{2}^{2}}\right)
+\end{equation*}
+
+\end{proof}
+
+\begin{remark}
+The introduction and use of the Rademacher random variable is known as the \emph{symmetrization trick}. The result of Hoeffding that gives the improved bound on the MGF is classically know as \emph{Hoeffding's Lemma}.
+
+The basic idea is to obtain bounds on the MGF. We will see later about classes of distributions that have a bounded MGF, and therefore allow for the application of this theorem despite being unbounded.
+\end{remark}
+
+With these result, let's discuss some guarantees for robust mean estimation. Given \(n\) samples from a distribution with bounded variance \(\sigma^{2}\) and mean \(\mu\), the mean \(\bar{X}_{n}\) satisfies:
+\begin{equation*}
+\Pr\left(|\bar{X}_{n} - \mu| > \epsilon\right) \leq \frac{\Var(\bar{X}_{n})}{\epsilon^{2}} = \frac{\sigma^{2}}{n\epsilon^{2}}
+\end{equation*}
+
+Therefore, we require \(n = O\left(\frac{\sigma^{2}}{\epsilon^{2}}\right)\) samples to obtain an estimate with high probability, say at least \(0.75\).
+
+Now, given \(k\) sets of \(n\) samples, can we do any better w.r.t. dependence on success probability? This is tantamount to being given \(\tilde{n} = n\cdot k\) samples, and splitting them into \(k\) subsets of size \(n\) each. The answer is yes, and can be obtained by considering the median of these \(k\) means.
+
+To see this, consider \(k\) Bernoulli random variables \(\{Z_{i}\}_{i=1}^{k}\), which take value \(1\) if \(|\bar{X}_{i,n} - \mu| > \epsilon\) and \(0\) otherwise. Since this is a bounded variable, we can apply the result from Theorem \ref{thm:bounded-hoeffding} and the fact that \(\Exp[Z_{i}] = \Pr(Z_{i} = 1) \leq \frac{1}{4}\) to get:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{k} Z_{i} > \frac{k}{2}\right) \leq \Pr\left(\sum_{i=1}^{k} (Z_{i} - \Exp[Z_{i}]) > \frac{k}{4}\right) \leq \exp\left(-\frac{k}{8}\right)
+\end{equation*}
+Therefore, if \(k = \log\left(\frac{8}{\delta}\right)\), we get a mean estimate which with probability atleast \(1 - \delta\), provides an \(\epsilon\)-error estimate.
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+\label{lem:cosh-upper}
+For any \(x\), we have that \(\cosh(x) \leq \exp\left(\frac{x^{2}}{2}\right)\).
+\end{lemma}
+
+\begin{proof}
+Note that \(\cosh(x) = \frac{1}{2}e^{x} + \frac{1}{2}e^{-x}\)
+
+The Maclaurin series for \(e^{x}\) thus gives:
+\begin{align*}
+\cosh(x) &= \frac{1}{2}\sum_{k=0}^{\infty} \frac{x^{2k}}{(2k)!} + \frac{1}{2}\sum_{k=0}^{\infty} \frac{x^{2k + 1}}{(2k + 1)!} + \frac{1}{2}\sum_{k=0}^{\infty} \frac{x^{2k}}{(2k)!} - \frac{1}{2}\sum_{k=0}^{\infty} \frac{x^{2k + 1}}{(2k + 1)!} \\
+&= \sum_{k=0}^{\infty} \frac{x^{2k}}{(2k)!} \\
+&\overset{(i)}\leq \sum_{k=0}^{\infty} \frac{x^{2k}}{2^{k}k!} = \sum_{k=0}^{\infty} \frac{\left(\nicefrac{x^{2}}{2}\right)^{k}}{k!} = \exp\left(\frac{x^{2}}{2}\right)
+\end{align*}
+where in Step \((i)\) we have used \((2k)! \geq 2^{k}\cdot k!\).
+\end{proof}
 \end{document}

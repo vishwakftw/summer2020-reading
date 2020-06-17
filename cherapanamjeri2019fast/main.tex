@@ -23,6 +23,7 @@
 \newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
 \newcommand{\indic}[1]{\mathbf{1}_{\{#1\}}}
 \newcommand{\trace}{\mathrm{trace}}
+\newcommand{\OPT}{\mathrm{OPT}}
 
 \newcommand{\eparam}{\widehat{\theta}}
 \newcommand{\tparam}{\theta^{\star}}
@@ -70,6 +71,8 @@ In contrast, when \(P\) is Gaussian, we get:
 \Pr\left(\|\eparam - \tparam\|_{2} > O\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{\|\Sigma\|_{2}\log(\nicefrac{1}{\delta})}{n}}\right)\right) \leq \delta
 \end{equation*}
 
+We will denote \(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{\|\Sigma\|_{2}\log(\nicefrac{1}{\delta})}{n}}\) as \(\OPT_{n, \delta, \Sigma}\) as a shorthand.
+
 To show this, consider \(Z_{i} = X_{i} - \tparam\) for all \(i \in [n]\). Then \(\|\eparam - \tparam\|_{2} = \left\|\frac{1}{n}\sum\limits_{i=1}^{n}Z_{i}\right\|_{2}\), where \(Z_{i}\)s are zero mean Gaussian RVs with covariance \(\Sigma\). Note that \(Z_{i} = \Sigma^{\nicefrac{1}{2}}Y_{i}\) for all \(i \in [n]\) where \(Y_{i}\)s are standard multivariate Gaussian RVs. Now, we have that:
 \begin{equation*}
 |\|Z_{i}\| - \|Z'_{i}\|_{2}| \leq \|Z_{i} - Z'_{i}\|_{2} \leq \|\Sigma^{\nicefrac{1}{2}}(Y_{i} - Y'_{i})\|_{2} \leq \|\Sigma^{\nicefrac{1}{2}}\|_{2}\|Y_{i} - Y'_{i}\|_{2}
@@ -90,5 +93,17 @@ and with probability at least \(1 - \delta\):
 \end{multline*}
 
 Lugosi and Mendelson showed that with only bounded \(2^{nd}\) moment, this rate can be achieved, but the estimator proposed is intractable.
+
+\section{Main Result}
+\begin{theorem}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a set of \(n\) i.i.d. random vectors i.e. \(X_{i} \in \real^{p}\), sampled from a distribution with mean \(\tparam\) and covariance \(\Sigma\). Then \(\mathsf{Descent-Mean-Estimate}\) with stepsize \(\gamma = \frac{1}{20}\) and number of iterations \(T = 1000\frac{\log(\|\tparam\|_{2})}{\epsilon}\) returns a mean estimate \(\eparam_{n, \delta}\) that satisfies with probability at least \(1 - \delta\):
+\begin{equation*}
+\|\eparam_{n, \delta} - \tparam\|_{2} \leq \max\left(\epsilon, 480000 \cdot \OPT_{n, \delta, \Sigma}\right)
+\end{equation*}
+\end{theorem}
+
+\(\mathsf{Descent-Mean-Estimate}\) is Algorithm 1 in the main text.
+
+
 
 \end{document}
