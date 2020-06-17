@@ -3,6 +3,7 @@
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{hyperref}
 \usepackage{nicefrac}
+\usepackage{xcolor}
 
 \setlength{\parskip}{2mm}
 
@@ -12,6 +13,8 @@
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
+
+\newcommand{\comprule}{\textcolor[RGB]{220,220,220}{\rule{\linewidth}{0.2pt}}}
 
 \newcommand{\real}{\mathbb{R}}
 \newcommand{\Exp}{\mathbb{E}}
@@ -288,6 +291,8 @@ By Chebyshev's inequality, for any \(\epsilon > 0\):
 This weak result is \emph{weak} because \(\xrightarrow{a.s.}\) implies \(\xrightarrow{p.}\).
 \end{remark}
 
+\comprule
+
 Next, we state a result that gives the asymptotic distribution of \(\bar{X}_{n}\).
 \begin{theorem}[Central Limit Theorem]
 \label{thm:clt}
@@ -331,6 +336,7 @@ where \(X_{i} \sim \mathrm{Ber}(p), i \in [n]\) and \(B_{n, p} \sim \mathrm{Bin}
 
 However, there is a better limit theorem in the regime where \(p \to \infty, n \to \infty\) and \(np = \lambda > 0\). This is the Poisson Limit Theorem:
 \begin{theorem}[Poisson Limit Theorem]
+\label{thm:plt}
 Consider \(\{X_{i}\}_{i=1}^{n}\) to be \(n\) independent Bernoulli variables with parameters \(p_{i}\). Then, for \(n \to \infty\), \(\max\limits_{i \in [n]} p_{i} \to 0\) and \(\sum\limits_{i=1}^{n}p_{i} = \lambda > 0\), we have that:
 \begin{equation*}
 \sum_{i=1}^{n}X_{i} \xrightarrow{d} \mathrm{Poi}(\lambda)
@@ -391,6 +397,8 @@ Note that one can get tail bounds for \(\calN(0, \sigma^{2})\) by simply reparam
 \left(\frac{\sigma}{t} - \frac{\sigma}{t^{3}}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}} \leq \Pr(g > t) \leq \frac{\sigma}{t}\cdot\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
 \end{equation*}
 \end{remark}
+
+\comprule
 
 The Central Limit Theorem (Theorem \ref{thm:clt}) states that averages tend in distribution to a Gaussian. But what can be said about the distribution function itself? The following theorem gives this result:
 \begin{theorem}[Berry-Esseen CLT]
@@ -485,6 +493,8 @@ Generally, high probability guarantees are given by setting the RHS to a confide
 Fix the error to \(\epsilon\). Smaller the \(\delta\), the more confident the estimate, but requires more samples.
 \end{remark}
 
+\comprule
+
 There is a two sided version to this inequality as well, and the stated below:
 \begin{corollary}
 Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) i.i.d. Rademacher random variables. Then, for any \(a \in \real^{n}\) we have:
@@ -572,7 +582,9 @@ The introduction and use of the Rademacher random variable is known as the \emph
 The basic idea is to obtain bounds on the MGF. We will see later about classes of distributions that have a bounded MGF, and therefore allow for the application of this theorem despite being unbounded.
 \end{remark}
 
-With these result, let's discuss some guarantees for robust mean estimation. Given \(n\) samples from a distribution with bounded variance \(\sigma^{2}\) and mean \(\mu\), the mean \(\bar{X}_{n}\) satisfies:
+\comprule
+
+With these results, let's discuss some guarantees for robust mean estimation. Given \(n\) samples from a distribution with bounded variance \(\sigma^{2}\) and mean \(\mu\), the mean \(\bar{X}_{n}\) satisfies:
 \begin{equation*}
 \Pr\left(|\bar{X}_{n} - \mu| > \epsilon\right) \leq \frac{\Var(\bar{X}_{n})}{\epsilon^{2}} = \frac{\sigma^{2}}{n\epsilon^{2}}
 \end{equation*}
@@ -603,5 +615,191 @@ The Maclaurin series for \(e^{x}\) thus gives:
 &\overset{(i)}\leq \sum_{k=0}^{\infty} \frac{x^{2k}}{2^{k}k!} = \sum_{k=0}^{\infty} \frac{\left(\nicefrac{x^{2}}{2}\right)^{k}}{k!} = \exp\left(\frac{x^{2}}{2}\right)
 \end{align*}
 where in Step \((i)\) we have used \((2k)! \geq 2^{k}\cdot k!\).
+\end{proof}
+
+\begin{lemma}
+Let \(X\) is a non-negative random variable whose density function is uniformly bounded by \(1\). Then:
+\begin{equation*}
+M_{X}(-t) \leq \frac{1}{t} \qquad t > 0
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+By definition:
+\begin{equation*}
+M_{X}(-t) = \Exp[e^{-tX}] = \int_{0}^{\infty} p(x) e^{-tx} dx \leq \int_{0}^{\infty} e^{-tx} dx = \frac{1}{t}
+\end{equation*}
+\end{proof}
+
+\subsection{Chernoff's Inequality}
+We discussed earlier about the Poisson Limit Theorem \ref{thm:plt}. While Hoeffding's inequality gives us good concentration bounds for bounded random variables such as Bernoulli, we can hope for better bounds by leveraging the fact that for small parameters, the distribution of sum of Bernoulli's could be closer to a Poisson as compared to a Gaussian.
+
+\begin{theorem}
+\label{thm:chernoff}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) independent Bernoulli random variables with parameters \(\{p_{i}\}_{i=1}^{n}\). Define the sum \(S_{n} = \sum\limits_{i=1}^{n} X_{i}\) and mean \(\mu = \Exp\left[S_{n}\right]\). For any \(t > \mu\), we have:
+\begin{equation*}
+\Pr(S_{n} > t) \leq e^{-\mu} \left(\frac{e\mu}{t}\right)^{t}
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Again, following the usual steps give us:
+\begin{equation*}
+\Pr(S_{n} > t) \leq \frac{1}{\exp(st)}\prod_{i=1}^{n}\Exp\left[\exp(s \cdot X_{i})\right] \qquad (s > 0)
+\end{equation*}
+
+Now, since \(X_{i}\) is a Bernoulli random variable, we get:
+\begin{equation*}
+\Exp\left[\exp(s \cdot X_{i})\right] = \exp(s)p_{i} + (1 - p_{i}) = 1 + (\exp(s) - 1)p_{i} \leq \exp((\exp(s) - 1)p_{i})
+\end{equation*}
+
+and hence:
+\begin{equation*}
+\Pr(S_{n} > t) \leq \frac{1}{\exp(st)}\exp(\exp(s) - 1)\mu)
+\end{equation*}
+
+To obtain the tightest upper bound, we minimize for \(s > 0\). The minimizer is \(s = \log\left(\frac{t}{\mu}\right)\), and the minimum is:
+\begin{equation*}
+\Pr(S_{n} > t) \leq \left(\frac{\mu}{t}\right)^{t}e^{t}e^{-\mu}
+\end{equation*}
+\end{proof}
+
+We can also obtain a bound on the other side of the tail like so.
+\begin{corollary}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) independent Bernoulli random variables with parameters \(\{p_{i}\}_{i=1}^{n}\). Define the sum \(S_{n} = \sum\limits_{i=1}^{n} X_{i}\) and mean \(\mu = \Exp\left[S_{n}\right]\). For any \(t > \mu\), we have:
+\begin{equation*}
+\Pr(S_{n} \leq t) \leq e^{-\mu} \left(\frac{e\mu}{t}\right)^{t}
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+We repeat the proof of Theorem \ref{thm:chernoff} using the fact that \(\Pr(S_{n} \leq t) = \Pr(-S_{n} \geq -t)\).
+
+\begin{equation*}
+\Pr(-S_{n} \geq -t) \leq \frac{1}{\exp(-st)}\prod_{i=1}^{n}\Exp\left[\exp(-s \cdot X_{i})\right] \qquad (s > 0)
+\end{equation*}
+
+Now, since \(X_{i}\) is a Bernoulli random variable, we get:
+\begin{gather*}
+\Exp\left[\exp(-s \cdot X_{i})\right] = \exp(-s)p_{i} + (1 - p_{i}) = 1 + (\exp(-s) - 1)p_{i} \leq \exp((\exp(-s) - 1)p_{i}) \\
+\Rightarrow \Pr(-S_{n} \geq -t) \leq \exp(st)\exp((\exp(-s) - 1)\mu)
+\end{gather*}
+
+To obtain the tighest upper bound, we minimize for \(s > 0\). The minimizer is \(s = \log\left(\frac{\mu}{t}\right)\), and the minimum is:
+\begin{equation*}
+\Pr(S_{n} \leq t) \leq \left(\frac{\mu}{t}\right)^{t}e^{t}e^{-\mu}
+\end{equation*}
+\end{proof}
+
+An interesting consequence of the Chernoff bound when \(\mu = \sum\limits_{i=1}^{n} p_{i} = \lambda\), but when \(n \to \infty\) is that, we retrieve tail bounds for the Poisson random variable:
+\begin{corollary}
+Consider the setting of Theorem \ref{thm:chernoff}. Then, for \(n \to \infty\) and \(\mu = \lambda\), we have:
+\begin{equation*}
+\Pr(X \geq t) \leq \left(\frac{e\lambda}{t}\right)^{t} e^{-\lambda}
+\end{equation*}
+where \(X \sim \mathrm{Poi}(\lambda)\).
+\end{corollary}
+
+\begin{proof}
+Note by the Poisson Limit Theorem \ref{thm:plt}, we have that:
+\begin{equation*}
+\lim_{n \to \infty} \Pr(S_{n} \geq t) = \Pr(X \geq t)
+\end{equation*}
+and this completes the proof.
+\end{proof}
+
+A popular version of Chernoff's inequality is to give bounds on the event of deviation from the mean \(\mu\). We state it as follows:
+\begin{corollary}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) independent Bernoulli random variables with parameters \(\{p_{i}\}_{i=1}^{n}\). Define the sum \(S_{n} = \sum\limits_{i=1}^{n} X_{i}\) and mean \(\mu = \Exp\left[S_{n}\right]\). For any \(\delta \in (0, 1]\), we have:
+\begin{equation*}
+\Pr\left(\left|S_{n} - \mu\right|\leq \delta\mu\right) \leq 2\exp\left(-c \mu \delta^{2}\right)
+\end{equation*}
+where \(c > 0\) is a universal constant.
+\end{corollary}
+
+\begin{proof}
+To prove this bound, we will transform it to the form we say in Theorem \ref{thm:chernoff}.
+\begin{equation*}
+\left|S_{n} - \mu'\right| \leq \delta\mu' \Rightarrow S_{n} - \mu' > \delta\mu' \vee S_{n} - \mu < -\delta\mu'
+\end{equation*}
+
+Now, we will bound the probability of the event \(S_{n} - \mu' > \delta\mu'\). For any \(\mu' \geq \mu\):
+\begin{align*}
+\Pr\left(S_{n} - \mu' > \delta\mu'\right) &= \Pr\left(S_{n} > \mu'(\delta + 1)\right)\\
+&\leq \exp(-s\mu'(1 + \delta))\exp((\exp(s) - 1)\mu) \qquad (s > 0)\\
+&\leq \exp((\exp(s) - 1)\mu - s\mu'(1 + \delta))
+\end{align*}
+
+Set \(s = \log(1 + \delta)\) to get:
+\begin{equation*}
+\Pr\left(S_{n} - \mu' > \delta\mu'\right) \leq \exp(\mu\delta - \mu'(1 + \delta)\log(1 + \delta)) \leq \exp(\mu'\delta - \mu'(1 + \delta)\log(1 + \delta)) \leq \exp\left(-\frac{\mu'\delta^{2}}{3}\right)
+\end{equation*}
+where the last step uses Lemma \ref{lem:log1p_lower}.
+
+Therefore, for any \(\mu' \geq \mu\), we have:
+\begin{equation*}
+\Pr\left(S_{n} > \mu'(1 + \delta)\right) \leq \exp\left(-\frac{\mu'\delta^{2}}{3}\right)
+\end{equation*}
+
+Now let's bound the probability of the event \(S_{n} - \mu' < -\delta\mu'\). For any \(\mu' \leq \mu\):
+\begin{align*}
+\Pr\left(S_{n} - \mu' \leq -\delta\mu'\right) &= \Pr\left(-S_{n} \geq \mu'(\delta - 1)\right)\\
+&\leq \exp(s\mu'(1 - \delta))\exp((\exp(-s) - 1)\mu) \qquad (s > 0)\\
+&\leq \exp((\exp(-s) - 1)\mu + s\mu'(1 - \delta))
+\end{align*}
+
+Set \(s = -\log(1 - \delta)\) to get:
+\begin{equation*}
+\Pr\left(S_{n} - \mu' \leq -\delta\mu'\right) \leq \exp(-\delta \mu - \mu'(1 - \delta)\log(1 - \delta)) \leq \exp(-\delta \mu' - \mu'(1 - \delta)\log(1 - \delta)) \leq \exp\left(-\frac{\mu'\delta^{2}}{3}\right)
+\end{equation*}
+
+Therefore, for any \(\mu' \leq \mu\), we have:
+\begin{equation*}
+\Pr\left(S_{n} - \mu' \leq -\delta\mu'\right) \leq \exp\left(-\frac{\mu'\delta^{2}}{3}\right) 
+\end{equation*}
+
+Now, one can apply a union bound for \(\mu' = \mu\), to get:
+\begin{equation*}
+\Pr\left(|S_{n} - \mu| > \delta\mu\right) \leq 2\exp\left(-\frac{\mu\delta^{2}}{3}\right)
+\end{equation*}
+
+\end{proof}
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+\label{lem:log1p_lower}
+For \(x \in [0, 1]\), we have the following inequality:
+\begin{equation*}
+\log(1 + x) \geq \frac{2x}{2 + x}
+\end{equation*}
+and consequently:
+\begin{equation*}
+x - (1 + x)\log(1 + x) \leq \frac{-x^{2}}{2 + x} \leq \frac{-x^{2}}{3}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+We know that:
+\begin{equation*}
+\log(1 + x) = \sum_{k=1}^{\infty} \frac{x^{k}(-1)^{k-1}}{k} \qquad \frac{2x}{2 + x} = \sum_{k=1}^{\infty} \frac{x^{k}(-1)^{k-1}}{2^{k-1}}
+\end{equation*}
+Therefore:
+\begin{equation*}
+\log(1 + x) - \frac{2x}{2 + x} = \sum_{k=1}^{\infty} x^{k}(-1)^{k-1}\left(\frac{1}{k} - \frac{2}{2^{k}}\right)
+\end{equation*}
+
+We know that since \(x \in [0, 1]\):
+\begin{equation*}
+\frac{x^{k}}{k} \geq \frac{x^{k+1}}{k} \geq \frac{x^{k+1}}{k+1}
+\end{equation*}
+and
+\begin{equation*}
+\frac{x^{k}}{2^{k-1}} \geq \frac{x^{k+1}}{2^{k-1}} \geq \frac{x^{k+1}}{2^{k}}
+\end{equation*}
+
+Due to these facts, \(\log(1 + x) - \frac{2x}{2 + x} \geq 0\). As a consequence:
+\begin{equation*}
+x - (1 + x)\log(1 + x) \leq x\left(\frac{-x}{2 + x}\right) = \frac{-x^{2}}{2 + x} \leq -\frac{x^{2}}{3}
+\end{equation*}
 \end{proof}
 \end{document}
