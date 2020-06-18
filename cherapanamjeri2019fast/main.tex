@@ -6,9 +6,10 @@
 
 \setlength{\parskip}{2mm}
 
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[section]
-\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
@@ -27,6 +28,8 @@
 
 \newcommand{\eparam}{\widehat{\theta}}
 \newcommand{\tparam}{\theta^{\star}}
+
+\newcommand{\calS}{\mathcal{S}}
 
 \title{Fast Mean Estimation with Sub-Gaussian Rates}
 \author{Cherapanamjeri, Flammarion, Bartlett}
@@ -100,10 +103,138 @@ Let \(\{X_{i}\}_{i=1}^{n}\) be a set of \(n\) i.i.d. random vectors i.e. \(X_{i}
 \begin{equation*}
 \|\eparam_{n, \delta} - \tparam\|_{2} \leq \max\left(\epsilon, 480000 \cdot \OPT_{n, \delta, \Sigma}\right)
 \end{equation*}
+in \(O\left(\log(\nicefrac{1}{\delta})^{3.5} + \log(\nicefrac{1}{\delta})^{2}d + nd\right)\) time.
 \end{theorem}
 
 \(\mathsf{Descent-Mean-Estimate}\) is Algorithm 1 in the main text.
 
+\begin{remark}
+Note that this result achieves the sub-Gaussian rate upto constants. However there is a direct dependence of \(\log(\|\tparam\|_{2})\) in the number of steps. The author comment that this can be brought down to \(\log(d)\) with an appropriate initialization.
+\end{remark}
 
+\subsection{Idea behind the algorithm}
+Lugosi and Mendelson show that when performing bucketing, most of the bucket means are close to the true mean in any direction. That is:
+\begin{equation}
+\label{eqn:lm-condition}
+\left|\{i : |\inner{v}{Z_{i} - \tparam}| \leq r\}\right| \geq 0.9k
+\end{equation}
+where \(k\) is the number of buckets, and \(\{Z_{i}\}_{i=1}^{k}\) are the bucket means, for an appropriately chosen \(r\).
 
+This provides a method for outlier detection. If a point \(x\) is far away from the mean, then \(x\) could be far away from most of the bucket means themselves. Define the optimization problem below:
+\begin{gather*}
+\max \sum_{i=1}^{k} b_{i} \\
+b_{i} \in \{0, 1\}, v \in \calS^{d-1} \\
+b_{i}\inner{v}{Z_{i} - x} \geq b_{i}r, \enskip i \in [k] \qquad (*)
+\end{gather*}
+
+Let's parse this optimization problem. Given an \(x\), we would like to find out the maximum number of buckets number and the direction along which these bucket means are far away from \(x\).
+
+How is this related to outlier-detection? Let the solution for the optimization problem be \(v^{\star}, b^{\star}\).
+\begin{itemize}
+\item If \(\|b^{\star}\|_{1}\) is small, then this indicates that even along the direction \(v^{\star}\), which is the direction of maximum deviation, the number of ``activations'' i.e., \(\left|\{i : b_{i} = 1\}\right|\) in \((*)\) is small. This means that the supremum over all directions, which is the distance, is also going to be small.
+\item On the otherhand, if \(\|b^{\star}\|_{1}\) is large, \((*)\) is activated for many bucket means along the direction of maximum deviation, which is the distance.
+\end{itemize}
+
+As seen above, the direction \(v^{\star}\) is vital in giving the direction of maximum deviation. An important insight of this paper is that the direction \(v^{\star}\) is well-aligned with the vector joining \(x\) and \(\mu\). That is:
+\begin{equation*}
+\inner{v^{\star}}{\frac{x - \mu}{\|x - \mu\|_{2}}} \approx 1
+\end{equation*}
+for specific choices of \(r\). Therefore, moving in small steps along \(v^{\star}\) takes us closer to the mean.
+
+\begin{remark}
+I believe that the choice of \(r\) is pertinent to the property of the point we are trying to estimate. In other words, this seems to me as a result can be applied for any point \(x^{\star}\) for an appropriately chosen \(r\).
+\end{remark}
+
+\subsection{The (sub-optimal) algorithm}
+
+\paragraph{Bucketing:} Given \(n\) datapoints, we bucket them into \(k\) groups of size \(\left\lfloor \frac{n}{k} \right\rfloor\) each. \(\{Z_{i}\}_{i=1}^{k}\) are the means of these buckets.
+
+\paragraph{Iterations:} At each iteration of the algorithm, we solve the optimization problem described above. Moreover, our update is: \(x_{t+1} = x_{t} + \gamma d_{t} g_{t}\). \(d_{t}\) is the maximum \(r\) for which we satisfy Eqn \ref{eqn:lm-condition}. \(g_{t}\) is the direction corresponding to this choice of \(r\).
+
+For this algorithm, we have the following result:
+\begin{theorem}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a set of \(n\) i.i.d. random vectors i.e. \(X_{i} \in \real^{p}\), sampled from a distribution with mean \(\tparam\) and covariance \(\Sigma\). Then the \(\mathsf{sub-optimal~algorithm}\) with stepsize \(\gamma = \frac{1}{4}\) and number of iterations \(T = 50\frac{\log(\|\tparam\|_{2})}{\epsilon}\) returns a mean estimate \(\eparam_{n, \delta}\) that satisfies with probability at least \(1 - \delta\):
+\begin{equation*}
+\|\eparam_{n, \delta} - \tparam\|_{2} \leq \max\left(\epsilon, 108000 \cdot \OPT_{n, \delta, \Sigma}\right)
+\end{equation*}
+\end{theorem}
+
+One key assumption to be made is as follows:
+\begin{assumption}
+\label{assump:lm}
+For the bucket means \(\{Z_{i}\}_{i=1}^{k}\), we have:
+\begin{equation*}
+\forall v \in \calS^{d-1}, \enskip \left|\{i : \inner{Z_{i} - \mu}{v} \geq 300\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{k\|\Sigma\|_{2}}{n}}\right)\right| \leq 0.05k
+\end{equation*}
+\end{assumption}
+
+The above assumption is telling that the proportion of buckets which are ``far away'' in all directions is small. Now we shift our focus on proving the correctness of the distance and gradient estimates \(d_{t}\) and \(g_{t}\) respectively.
+\begin{lemma}
+Under Assumption \ref{assump:lm}, we have that:
+\begin{equation*}
+\left|d_{t} - \|x_{t} - \tparam\|_{2}\right| \leq 300\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{k\|\Sigma\|_{2}}{n}}\right)
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+For convenience, let \(r_{\delta} = 300\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{k\|\Sigma\|_{2}}{n}}\right)\).
+The equation can be hashed out into two pieces:
+\begin{equation*}
+-r_{\delta} \leq d_{t} - \|x_{t} - \tparam\|_{2} \leq r_{\delta}
+\end{equation*}
+
+\paragraph{Lower Bound:} If \(\|x_{t} - \tparam\|_{2} \leq r_{\delta}\), then \(d_{t} - \|x_{t} - \tparam\| \geq -r_{\delta}\). If \(\|x_{t} - \tparam\|_{2} > r_{\delta}\). Note that \(d_{t}\) is that value of parameter \(r\) such that:
+\begin{equation*}
+\forall v \in \calS^{d-1}, \enskip \left|\{i : \inner{Z_{i} - x}{v} \geq r\}\right| \leq 0.1k
+\end{equation*}
+From Assumption \ref{assump:lm}, we know that:
+\begin{equation*}
+\forall v \in \calS^{d-1}, \enskip \left|\{i : |\inner{Z_{i} - \tparam}{v}| \geq r\}\right| \leq 0.05k
+\end{equation*}
+Furthermore, for any \(v \in \calS^{d-1}\):
+\begin{equation*}
+\inner{v}{Z_{i} - x_{t}} = \inner{v}{Z_{i} - \tparam} + \inner{v}{\tparam - x_{t}} \overset{(i)}\geq \|x_{t} - \tparam\|_{2} - r_{\delta} \geq 0
+\end{equation*}
+where in Step \((i)\) we have chosen \(v = \frac{\tparam - x_{t}}{\|\tparam - x_{t}\|_{2}}\) and the assumption. Therefore, by definition, the lower bound holds.
+
+\paragraph{Upper Bound:} The upper bound can be proven by contradiction. If there existed \(r > \|x_{t} - \tparam\|_{2} + r_{\delta}\) such that the solutions of the optimization problem \(b^{\star}, v^{\star}\), with \(\|b^{\star}\|_{1} \geq 0.9k\), then:
+\begin{equation*}
+\inner{Z_{i} - \tparam}{v^{\star}} = \inner{Z_{i} - x_{t}}{v^{\star}} + \inner{x_{t} - \tparam}{v^{\star}} \geq r - \|x_{t} - \tparam\|_{2} \geq r_{\delta}
+\end{equation*}
+for \(0.9k\) indices \(i \in [k]\). This is contradiction to the assumption made, and hence the upper bound holds.
+\end{proof}
+
+\begin{lemma}
+Under Assumption \ref{assump:lm} and the iterate satisfying
+\begin{equation*}
+\|x_{t} - \tparam\| \geq 1200\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{k\|\Sigma\|_{2}}{n}}\right)
+\end{equation*}
+we have that:
+\begin{equation*}
+\inner{g_{t}}{\Delta} \geq \frac{1}{2}
+\end{equation*}
+where \(\Delta = \frac{\tparam - x_{t}}{\|\tparam - x_{t}\|_{2}}\).
+\end{lemma}
+
+\begin{proof}
+For convenience, let \(r_{\delta} = 300\left(\sqrt{\frac{\trace(\Sigma)}{n}} + \sqrt{\frac{k\|\Sigma\|_{2}}{n}}\right)\).
+As seen earlier, \(d_{t}\) is such that:
+\begin{equation*}
+\left|\left\{i : \inner{Z_{i} - x_{t}}{g_{t}} > d_{t}\right\}\right| \geq 0.9k
+\end{equation*}
+From Assumption \ref{assump:lm}, we have that:
+\begin{equation*}
+\left|\left\{i : \inner{Z_{i} - x_{t}}{g_{t}} > r_{\delta}\right\}\right| \leq 0.95k
+\end{equation*}
+Hence there must exist points in common to these groups, and the intersection is at least \(0.5k\) in size. Let \(Z_{j}\) belong to the intersection. Then:
+\begin{equation*}
+\|\tparam - x_{t}\| - r_{\delta} \leq d_{t} \leq \inner{Z_{i} - x_{t}}{g_{t}} = \inner{Z_{i} - \tparam}{g_{t}} + \inner{\tparam - x_{t}}{g_{t}} \leq r_{\delta} + \|\mu - x_{t}\|_{2}\inner{\Delta}{g_{t}}
+\end{equation*}
+
+Some rearrangement followed by using the condition of the lower bound on the distance between the estimate and the mean finishes the proof.
+\end{proof}
+
+\begin{remark}
+Note that in all its generality, we only use the properties of the optimization problem and the property of the mean in Assumption \ref{assump:lm}. This means that we can loosely search for points that satisfy an assumed property, by merely tweaking the relevant portions of the optimization. Also note that we have a \(k\) term sitting in the form for \(r_{\delta}\). Choosing this to be \(O(\log(\nicefrac{1}{\delta})\) would give the sub-Gaussian rate.
+\end{remark}
 \end{document}

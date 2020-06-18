@@ -790,14 +790,14 @@ Therefore:
 
 We know that since \(x \in [0, 1]\):
 \begin{equation*}
-\frac{x^{k}}{k} \geq \frac{x^{k+1}}{k} \geq \frac{x^{k+1}}{k+1}
+\frac{x^{k}}{k} - \frac{x^{k+1}}{k+1} \geq \frac{x^{k}}{k(k+1)}
 \end{equation*}
 and
 \begin{equation*}
-\frac{x^{k}}{2^{k-1}} \geq \frac{x^{k+1}}{2^{k-1}} \geq \frac{x^{k+1}}{2^{k}}
+\frac{x^{k}}{2^{k-1}} - \frac{x^{k+1}}{2^{k}} \geq \frac{x^{k}}{2^{k+1}}
 \end{equation*}
 
-Due to these facts, \(\log(1 + x) - \frac{2x}{2 + x} \geq 0\). As a consequence:
+Due to these facts, and using \(k(k + 1) \leq 2^{k+1}\), we get \(\log(1 + x) - \frac{2x}{2 + x} \geq 0\). As a consequence:
 \begin{equation*}
 x - (1 + x)\log(1 + x) \leq x\left(\frac{-x}{2 + x}\right) = \frac{-x^{2}}{2 + x} \leq -\frac{x^{2}}{3}
 \end{equation*}
