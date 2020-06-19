@@ -7,9 +7,9 @@
 
 \setlength{\parskip}{2mm}
 
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[section]
-\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{corollary}{Corollary}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
@@ -105,5 +105,105 @@ By triangle inequality:
 \begin{equation*}
 \|Aw\|_{2} \geq \|Av\|_{2} - \|A(w - v)\|_{2} \geq \|A\|_{2} - \epsilon\|A\|_{2} \Rightarrow \|Aw\|_{2} \leq \frac{1}{1 - \epsilon}\|A\|_{2} \leq \frac{1}{1 - \epsilon} \sup_{w \in \calN_{\epsilon}(S^{n-1})}\|Aw\|_{2}
 \end{equation*}
+\end{proof}
+
+\section{Random matrices}
+\subsection{Independent entries}
+We will consider the following setup: entries of the matrices being analyzed are independent and zero mean.
+
+Let's look at a asymptotic result, famously known as the Bai-Yin's law:
+\begin{theorem}[Bai-Yin's law]
+Let \(A\) be an \(N \times n\) matrix whose entries are independent copies of a random variable with zero mean, unit variance and finite \(4^{th}\) moment. Consider the scenario where \(N, n \to \infty\) while \(\frac{n}{N} = c \in [0, 1]\). Then:
+\begin{equation*}
+\sigma_{\min}(A) = \sqrt{N} - \sqrt{n} + o(\sqrt{n}) \qquad \sigma_{\max}(A) = \sqrt{N} + \sqrt{n} + o(\sqrt{n})
+\end{equation*}
+almost surely.
+\end{theorem}
+
+To revisit notation, \(f(n) \in o(\sqrt{n})\) is such that \(\lim\limits_{n\to\infty} \frac{f(n)}{\sqrt{n}} = 0\). A non-asymptotic version of the Bai-Yin's law is as follows:
+\begin{theorem}[Gordon's Theorem]
+Let \(A\) be an \(N \times n\) matrix whose entries are independent standard normal variables. Then:
+\begin{equation*}
+\sqrt{N} - \sqrt{n} \leq \Exp[\sigma_{\min}(A)] \leq \Exp[\sigma_{\max}(A)] \leq \sqrt{N} + \sqrt{n}
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+For our proof, we will use the following theorem due to Sudakov and Fernique.
+\begin{theorem}[Sudakov-Fernique Theorem]
+Let \((X_{t})_{t \in T}\) and \((Y_{t})_{t \in T}\) be two Gaussian processes satisfying:
+\begin{equation*}
+\Exp\left[(X_{s} - X_{t})^{2}\right] \leq \Exp\left[(Y_{s} - Y_{t})^{2}\right]
+\end{equation*}
+for all \(s, t \in T\) and \(T\) being an abstract set. Then:
+\begin{equation*}
+\Exp\left[\sup_{t \in T} X_{t}\right] \leq \Exp\left[\sup_{t \in T}Y_{t}\right]
+\end{equation*}
+\end{theorem}
+
+First note that:
+\begin{equation*}
+\sigma_{\max}(A) = \sup_{u \in S^{n-1}} \sup_{v \in S^{N - 1}} \inner{Au}{v}
+\end{equation*}
+
+Therefore, for a Gaussian process defined as \(X_{u, v} = \inner{Au}{v}\), we have that:
+\begin{equation*}
+\Exp\left[\sup_{t \in T}X_{u, v}\right] = \Exp[\sigma_{\max}(A)]
+\end{equation*}
+for \(T = S^{N-1} \times S^{n-1}\). To complement this, we define another Gaussian process \(Y_{u, v} = \inner{g}{u} + \inner{h}{v}\), where \(g\) and \(h\) are Gaussian random vectors. For this Gaussian process, we have:
+\begin{equation*}
+\Exp\left[\sup_{t \in T} Y_{u, v}\right] = \Exp\left[\|g\|_{2} + \|h\|_{2}\right] = \sqrt{N} + \sqrt{n}
+\end{equation*}
+
+It remains to check if \(\Exp\left[(X_{u, v} - X_{u',v'})^{2}\right] \leq \Exp\left[(Y_{u, v} - Y_{u', v'})^{2}\right]\).
+\begin{equation*}
+\Exp\left[(X_{u, v} - X_{u', v'})^{2}\right] \overset{(i)}= \sum_{i=1}^{N}\sum_{j=1}^{n}(v_{i}u_{j} - v'_{i}u'_{j})^{2} \overset{(ii)}\leq \|u - u'\|_{2}^{2} + \|v - v'\|_{2}^{2} \overset{(iii)}= \Exp\left[(Y_{u, v} - Y_{u', v'})^{2}\right]
+\end{equation*}
+Step \((i)\) uses Lemma \ref{lem:quadratic-random-mat-iid-entry}, Step \((ii)\) uses Lemma \ref{lem:inner-to-norm} and Step \((iii)\) uses Lemma \ref{lem:linear-random-vec}, and therefore the upper bound is complete.
+
+For \(\sigma_{\min}(A)\), the respective program is:
+\begin{equation*}
+\sigma_{\min}(A) = \inf_{u \in S^{n-1}} \sup_{v \in S^{N - 1}} \inner{Au}{v}
+\end{equation*}
+
+There exists a result that generalizes the Sudakov-Fernique theorem to min-max objectives, and consequently results in the lower bound.
+\end{proof}
+
+\begin{remark}
+\(X_{u, v}\) a Gaussian process because: \(\inner{Au}{v} = \sum\limits_{i=1}^{N}\sum\limits_{j=1}^{n}v_{i}u_{j}A_{ij} \sim \calN\left(0, \|v\|_{2}^{2}\|u\|_{2}^{2}\right)\).
+\end{remark}
+
+\subsubsection{Auxiliary lemmata}
+\begin{lemma}
+\label{lem:quadratic-random-mat-iid-entry}
+Let \(A\) be a matrix whose entries are independent standard normal random variables. Then for any \(u, u' \in \real^{n}\) and \(v, v' \in \real^{N}\), we have:
+\begin{equation*}
+\Exp\left[(v^{T}Au - v'^{T}Au')^{2}\right] = \sum_{i=1}^{N}\sum_{j=1}^{n}(v_{i}u_{j} - v'_{i}u'_{j})^{2}
+\end{equation*}
+\end{lemma}
+\begin{proof}
+
+\end{proof}
+
+\begin{lemma}
+\label{lem:inner-to-norm}
+For any \(u, u' \in \real^{n}\) and \(v, v' \in \real^{N}\), we have:
+\begin{equation*}
+\sum_{i=1}^{N}\sum_{j=1}^{n}(v_{i}u_{j} - v'_{i}u'_{j})^{2} \leq \|u - u'\|_{2}^{2} + \|v - v'\|_{2}^{2}
+\end{equation*}
+\end{lemma}
+\begin{proof}
+
+\end{proof}
+
+\begin{lemma}
+\label{lem:linear-random-vec}
+Let \(g, h\) be random normal vectors with zero mean. Define \(Y_{u, v} = \inner{g}{u} + \inner{h}{v}\). Then for any \(u, u' \in \real^{n}\) and \(v, v' \in \real^{N}\), we have:
+\begin{equation*}
+\Exp\left[(Y_{u, v} - Y_{u', v'})^{2}\right] = \|u - u'\|_{2}^{2} + \|v - v'\|_{2}^{2}
+\end{equation*}
+\end{lemma}
+\begin{proof}
+
 \end{proof}
 \end{document}
