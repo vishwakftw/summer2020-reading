@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+\usepackage{nicefrac}
+\usepackage{xcolor}
+
+\setlength{\parskip}{2mm}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\comprule}{\textcolor[RGB]{220,220,220}{\rule{\linewidth}{0.2pt}}}
+
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\Exp}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\inner}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\indic}[1]{\mathbf{1}_{\{#1\}}}
+
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calE}{\mathcal{E}}
+
+\title{Notes for Random Matrix Theory}
+\author{Vishwak Srinivasan}
+
+\date{}
+
+\begin{document}
+\raggedright
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+A useful fact is the following: \emph{tall matrices are approximate isometries}. Let's parse this statement.
+\begin{itemize}
+\item Tall matrices are those matrices \(A \in \real^{N \times n}\) where \(N \gg n\).
+\item Approximate isometries: consider the vector space \(\real^{n}\) and \(\real^{N}\). A tall matrix transforms a vector \(x \in \real^{n}\) to \(Ax \in \real^{N}\). Mathematically:
+\begin{equation*}
+(1 - \delta)K\|x\|_{2} \leq \|Ax\|_{2} \leq (1 + \delta)K\|x\|_{2}
+\end{equation*}
+where \(K\) is a normalization factor and \(\delta \ll 1\).
+This looks like a version of Johnson-Lindenstrauss.
+\end{itemize}
+
+Now divide by \(\|x\|_{2}\) to get:
+\begin{equation*}
+(1 - \delta)K \leq \frac{\|Ax\|_{2}}{\|x\|_{2}} \leq (1 + \delta)K \Rightarrow (1 - \delta)K \leq \sigma_{\min}(A) \leq \sigma_{\max}(A) \leq (1 + \delta)K
+\end{equation*}
+and this tells us that the range of singular values is small. Furthermore, the condition number be bounded as: \(\kappa(A) \leq \frac{1 + \delta}{1 - \delta} \approx 1\) for the specified bound on \(\delta\). Therefore, tall matrices are well conditioned \emph{always}.
+
+\subsection{Some miscellaneous results}
+\(\epsilon\)-nets are a neat way of computing quantities that can be expressed over balls.
+An \(\epsilon\)-net of a set \(S\) is a set of points \(\calN_{\epsilon}(S)\) that approximates a point in the original set.
+That is to say, for every \(x \in S\), there exists \(y \in \calN_{\epsilon}(S)\) such that \(\|y - x\| \leq \epsilon\).
+As you can see, it is define w.r.t a norm. The cardinality of the \(\calN_{\epsilon}(S)\) is called the \(\epsilon\)-covering number of \(S\) (w.r.t. a norm).
+
+Now, let's look at an application of nets in computing the \(\ell_{2}\)-norm of a vector.
+\begin{lemma}
+Let \(x \in \real^{p}\). Then:
+\begin{equation*}
+\|x\|_{2} \leq \frac{1}{1 - \epsilon}\sup_{v \in \calN_{\epsilon}(S^{p-1})} |v^{T}x|
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+Let \(v\) be the unit vector that results in \(|v^{T}x| = \|x\|_{2}\) (this is just unit vector in the direction of \(x\)). Now, let \(w \in \calN_{\epsilon}(S^{p-1})\) be the closest element to \(v\). By Cauchy-Schwarz:
+\begin{equation*}
+|(v - w)^{T}x| \leq \|v - w\|_{2}\|x\|_{2} \leq \epsilon \|x\|_{2}
+\end{equation*}
+
+Hence, by triangle inequality:
+\begin{equation*}
+|w^{T}x| \geq |v^{T}x| - |(w - v)^{T}x| \geq \|x\|_{2} - \epsilon\|x\|_{2} \Rightarrow \|x\|_{2} \leq \frac{1}{1 - \epsilon}|w^{T}x| \leq \frac{1}{1 - \epsilon} \sup_{w \in \calN_{\epsilon}(S^{p-1})}|w^{T}x|
+\end{equation*}
+\end{proof}
+
+\begin{remark}
+An important takeaway is that an optimization problem over an uncountable set, has now be reduced to a countable set, at the cost of some sub-optimality. The \(\epsilon\)-covering number of \(S^{p-1}\) is \(\left(1 + \frac{2}{\epsilon}\right)^{p}\).
+\end{remark}
+
+Back to random matrix theory, let's use an idea from the above lemma to compute the spectral norm of a matrix \(A\).
+\begin{lemma}
+Let \(A \in \real^{N \times n}\). Then:
+\begin{equation*}
+\|A\|_{2} \leq \frac{1}{1 - \epsilon}\sup_{v \in \calN_{\epsilon}(S^{n-1})} \|Av\|_{2}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+The proof is the same from earlier. Let \(v\) be unit vector leading to \(\|Av\|_{2} = \|A\|_{2}\). Choose \(w \in \calN_{\epsilon}(S^{n-1})\) closest to \(v\). Using the fact that \(\|Ax\|_{2} \leq \|A\|_{2}\|x\|_{2}\):
+\begin{equation*}
+\|A(w - v)\| \leq \|A\|_{2}\|w - v\|_{2} \leq \|A\|_{2}\epsilon
+\end{equation*}
+
+By triangle inequality:
+\begin{equation*}
+\|Aw\|_{2} \geq \|Av\|_{2} - \|A(w - v)\|_{2} \geq \|A\|_{2} - \epsilon\|A\|_{2} \Rightarrow \|Aw\|_{2} \leq \frac{1}{1 - \epsilon}\|A\|_{2} \leq \frac{1}{1 - \epsilon} \sup_{w \in \calN_{\epsilon}(S^{n-1})}\|Aw\|_{2}
+\end{equation*}
+\end{proof}
+\end{document}
