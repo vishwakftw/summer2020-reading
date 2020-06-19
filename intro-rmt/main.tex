@@ -170,8 +170,67 @@ There exists a result that generalizes the Sudakov-Fernique theorem to min-max o
 \end{proof}
 
 \begin{remark}
-\(X_{u, v}\) a Gaussian process because: \(\inner{Au}{v} = \sum\limits_{i=1}^{N}\sum\limits_{j=1}^{n}v_{i}u_{j}A_{ij} \sim \calN\left(0, \|v\|_{2}^{2}\|u\|_{2}^{2}\right)\).
+\(X_{u, v}\) a Gaussian process because: \(\inner{Au}{v} = \sum\limits_{i=1}^{N}\sum\limits_{j=1}^{n}v_{i}u_{j}A_{ij} \sim \calN\left(0, \|v\|_{2}^{2}\|u\|_{2}^{2}\right)\). Similarly, \(Y_{u,v} = \inner{g}{u} + \inner{h}{v}\) is a Gaussian process because \(\inner{g}{u} \sim \calN(0, \|g\|_{2}^{2})\) and \(\inner{h}{v} \sim \calN(0, \|h\|_{2}^{2})\).
 \end{remark}
+
+Gordon's Theorem gives you bounds on the expected singular value. Via a Lipschitz concentration lemma, we can provide high probability estimates for instantiations of such matrices. The Lipschitz concentration lemma is stated below:
+\begin{lemma}
+\(X\) is a standard normal variable. Let \(f\) be an \(L\)-Lipschitz function i.e., \(|f(x) - f(y)| \leq L\|x - y\|_{2}\) for all \(x, y \in \real^{n}\). Then:
+\begin{equation*}
+\Pr\left(\left|f(X) - \Exp\left[f(X)\right]\right| > t\right) \leq 2\exp\left(-\frac{t^{2}}{2L^{2}}\right)
+\end{equation*}
+\end{lemma}
+
+This is useful because \(\sigma_{\min}(A)\) and \(\sigma_{\max}(A)\) are \(1\)-Lipschitz functions of the inputs. The corollary below couples the results from above:
+\begin{corollary}
+Let \(A\) be an \(N \times n\) matrix with standard normal entries. Then with probability at least \(1 - 2\exp(\nicefrac{t^{2}}{2})\), we have that:
+\begin{gather*}
+\sqrt{N} - \sqrt{n} - t \leq \sigma_{\min}(A) \leq \sqrt{N} - \sqrt{n} + t \\
+\sqrt{N} + \sqrt{n} + t \leq \sigma_{\max}(A) \leq \sqrt{N} + \sqrt{n} - t
+\end{gather*}
+\end{corollary}
+
+We now go back to our older discussion on approximate isometries. A matrix \(\bar{A} = \frac{A}{\sqrt{N}}\) is an approximate isometry iff \(\bar{A}^{T}\bar{A}\) is an approximate identity. Why is this true? Recall from earlier:
+\begin{equation*}
+(1 - \delta)\|x\|_{2}^{2} \leq x^{T}\bar{A}^{T}\bar{A}x \leq (1 + \delta)\|x\|_{2}^{2} \Rightarrow |x^{T}(\bar{A}^{T}\bar{A} - I)x| \leq \delta \|x\|_{2}^{2}
+\end{equation*}
+where we have used \(K = N\). This might seem as a fragile explanation, however, but motivates future discussions about relating \(\bar{A}\) and \(\bar{A}^{T}\bar{A}\) in our analyses.
+
+\begin{lemma}
+Let \(\delta \in (0, 1)\). If \(B \in \real^{N \times n}\) is a matrix that satisfies:
+\begin{equation*}
+\|B^{T}B - I\|_{2} \leq \delta^{2}
+\end{equation*}
+Then \((1 - \delta) \leq \sigma_{\min}(B) \leq \sigma_{\max}(B) \leq (1 + \delta)\)
+
+Conversely, if \(B\) satisfies:
+\begin{equation*}
+(1 - \delta) \leq \sigma_{\min}(B) \leq \sigma_{\max}(B) \leq (1 + \delta)
+\end{equation*}
+then \(\|B^{T}B - I\|_{2} \leq \delta^{2} + 2\delta\).
+\end{lemma}
+
+\begin{proof}
+First note that:
+\begin{equation*}
+\|B^{T}B - I\|_{2} \leq \alpha \Leftrightarrow |\|Bx\|_{2}^{2} - 1| \leq \alpha
+\end{equation*}
+for any \(x \in S^{n - 1}\).
+This can be proven as follows:
+\begin{equation*}
+\|B^{T}B - I\|_{2} \leq \alpha \Leftrightarrow \max_{x \in S^{n-1}} |x^{T}(B^{T}B - I)x| \leq \alpha \Leftrightarrow \max_{x \in S^{n-1}} |\|Bx\|_{2}^{2} - 1| \leq \alpha \Leftrightarrow |\|Bx\|_{2}^{2} - 1| \leq \alpha ~\forall x \in S^{n-1}
+\end{equation*}
+
+This leads to:
+\begin{equation*}
+1 - \sqrt{\alpha} \leq \sqrt{1 - \alpha} \leq \|Bx\|_{2} \leq \sqrt{1 + \alpha} \leq 1 + \sqrt{\alpha}
+\end{equation*}
+
+Now substitute \(\alpha = \delta^{2}\) to complete the proof for the first statement.
+
+For the second statement, we know that \(\sigma_{\min}(B) = \sqrt{\lambda_{\min}(B^{T}B)}\) and \(\sigma_{\max}(B) = \sqrt{\lambda_{\max}(B^{T}B)}\). Therefore, the eigenvalues of \(B^{T}B\) lie in the interval \([(1 - \delta)^{2}, (1 + \delta)^{2}]\). This means that the maximum absolute eigenvalue of \(B^{T}B - I\) must be bounded as \(\max\{(1 - \delta)^{2} - 1, (1 + \delta)^{2} - 1\} = \delta^{2} + 2\delta\), and this completes the proof.
+\end{proof}
+
 
 \subsubsection{Auxiliary lemmata}
 \begin{lemma}
