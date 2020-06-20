@@ -207,7 +207,7 @@ Conversely, if \(B\) satisfies:
 \begin{equation*}
 (1 - \delta) \leq \sigma_{\min}(B) \leq \sigma_{\max}(B) \leq (1 + \delta)
 \end{equation*}
-then \(\|B^{T}B - I\|_{2} \leq \delta^{2} + 2\delta\).
+then \(\|B^{T}B - I\|_{2} \leq 3\delta\).
 \end{lemma}
 
 \begin{proof}
@@ -228,9 +228,8 @@ This leads to:
 
 Now substitute \(\alpha = \delta^{2}\) to complete the proof for the first statement.
 
-For the second statement, we know that \(\sigma_{\min}(B) = \sqrt{\lambda_{\min}(B^{T}B)}\) and \(\sigma_{\max}(B) = \sqrt{\lambda_{\max}(B^{T}B)}\). Therefore, the eigenvalues of \(B^{T}B\) lie in the interval \([(1 - \delta)^{2}, (1 + \delta)^{2}]\). This means that the maximum absolute eigenvalue of \(B^{T}B - I\) must be bounded as \(\max\{(1 - \delta)^{2} - 1, (1 + \delta)^{2} - 1\} = \delta^{2} + 2\delta\), and this completes the proof.
+For the second statement, we know that \(\sigma_{\min}(B) = \sqrt{\lambda_{\min}(B^{T}B)}\) and \(\sigma_{\max}(B) = \sqrt{\lambda_{\max}(B^{T}B)}\). Therefore, the eigenvalues of \(B^{T}B\) lie in the interval \([(1 - \delta)^{2}, (1 + \delta)^{2}]\). This means that the maximum absolute eigenvalue of \(B^{T}B - I\) must be bounded as \(\max\{|(1 - \delta)^{2} - 1|, |(1 + \delta)^{2} - 1|\} \leq \max\{2\delta, 3\delta\} = 3\delta\), and this completes the proof.
 \end{proof}
-
 
 \subsubsection{Auxiliary lemmata}
 \begin{lemma}
@@ -241,18 +240,36 @@ Let \(A\) be a matrix whose entries are independent standard normal random varia
 \end{equation*}
 \end{lemma}
 \begin{proof}
+\begin{equation*}
+v^{T}Au - v'^{T}Au' = \sum_{i=1}^{N}\sum_{j=1}^{n} v_{i}u_{j}A_{ij} - v'_{i}u'_{j}A_{ij} = \sum_{i=1}^{N}\sum_{j=1}^{n}A_{ij}\Delta_{ij}
+\end{equation*}
+for \(\Delta_{ij} = v_{i}u_{j} - v'_{i}u'_{j}\).
 
+This implies:
+\begin{align*}
+(v^{T}Au - v'^{T}Au')^{2} &= \left(\sum_{i=1}^{N}\sum_{j=1}^{n}A_{ij}\Delta_{ij}\right)^{2} \\
+&= \sum_{i=1}^{N}\sum_{j=1}^{n}\sum_{k=1}^{N}\sum_{l=1}^{n} A_{ij}\Delta_{ij}A_{kl}\Delta_{kl} \\
+&= \sum_{i=1}^{N}\sum_{j=1}^{n} A_{ij}^{2}\Delta_{ij}^{2} + \sum_{i=1}^{N}\sum_{j=1}^{n}\sum_{\substack{k=1 \\ k \neq i}}^{N} \sum_{\substack{l=1 \\ l \neq j}}^{n} A_{ij}A_{kl}\Delta_{ij}\Delta_{kl} \\
+\Rightarrow \Exp\left[(v^{T}Au - v'^{T}Au')^{2}\right] &= \sum_{i=1}^{N}\sum_{j=1}^{n} \Exp\left[A_{ij}^{2}\right]\Delta_{ij}^{2} + \sum_{i=1}^{N}\sum_{j=1}^{n}\sum_{\substack{k=1 \\ k \neq i}}^{N} \sum_{\substack{l=1 \\ l \neq j}}^{n} \underbrace{\Exp\left[A_{ij}A_{kl}\right]}_{=~0}\Delta_{ij}\Delta_{kl} \\
+&= \sum_{i=1}^{N}\sum_{j=1}^{n} \Delta_{ij}^{2} = \sum_{i=1}^{N}\sum_{j=1}^{n}(v_{i}u_{j} - v'_{i}u'_{j})^{2}
+\end{align*}
 \end{proof}
 
 \begin{lemma}
 \label{lem:inner-to-norm}
-For any \(u, u' \in \real^{n}\) and \(v, v' \in \real^{N}\), we have:
+For any \(u, u' \in S^{n-1}\) and \(v, v' \in S^{N-1}\), we have:
 \begin{equation*}
 \sum_{i=1}^{N}\sum_{j=1}^{n}(v_{i}u_{j} - v'_{i}u'_{j})^{2} \leq \|u - u'\|_{2}^{2} + \|v - v'\|_{2}^{2}
 \end{equation*}
 \end{lemma}
 \begin{proof}
-
+%\begin{align*}
+%\sum_{i=1}^{N}\sum_{j=1}^{n}(v_{i}u_{j} - v'_{i}u'_{j})^{2} &= \sum_{i=1}^{N}\sum_{j=1}^{n}v_{i}^{2}u_{j}^{2} + {v'_{i}}^{2}{u'_{j}}^{2} - 2v_{i}v'_{i}u_{j}u'_{j} \\
+%&= 2 - 2\sum_{i=1}^{N}\sum_{j=1}^{n}v_{i}v'_{i}u_{j}u'_{j} \\
+%&\leq 4 - 2\sum_{i=1}^{N}\sum_{j=1}^{n}v_{i}v'_{i}u_{j}u'_{j} \\
+%&= \sum_{i=1}^{N}v_{i}^{2} + \sum_{i=1}^{N}{v'_{i}}^{2} + \sum_{j=1}^{n}u_{j}^{2} + \sum_{j=1}^{n}{u'_{j}}^{2} - 2\sum_{i=1}^{N}\sum_{j=1}^{n}v_{i}v'_{i}u_{j}u'_{j} \\
+%&\leq \sum_{i=1}^{N}v_{i}^{2} + {v'_{i}}^{2} - 2v_{i}v'_{i} + \sum_{j=1}^{n}u_{j}^{2} + {u'_{j}}^{2} - 2u_{j}u'_{j}
+%\end{align*}
 \end{proof}
 
 \begin{lemma}
@@ -263,6 +280,10 @@ Let \(g, h\) be random normal vectors with zero mean. Define \(Y_{u, v} = \inner
 \end{equation*}
 \end{lemma}
 \begin{proof}
-
+\begin{gather*}
+Y_{u, v} - Y_{u', v'} = \inner{g}{u - u'} + \inner{h}{v - v'} \\
+\Rightarrow (Y_{u, v} - Y_{u', v'})^{2} = (\inner{g}{u - u'})^{2} + (\inner{h}{v - v'})^{2} + 2\inner{g}{u - u'}\inner{h}{v - v'} \\
+\Rightarrow \Exp\left[(Y_{u, v} - Y_{u', v'})^{2}\right] = \underbrace{\Exp\left[(\inner{g}{u - u'})^{2}\right]}_{\Var(\calN(0, \|u - u'\|_{2}^{2}))} + \underbrace{\Exp\left[(\inner{h}{v - v'})^{2}\right]}_{\Var(\calN(0, \|v - v'\|_{2}))} + \underbrace{2\Exp\left[\inner{g}{u - u'}\inner{h}{v - v'}\right]}_{=~0}
+\end{gather*}
 \end{proof}
 \end{document}

@@ -7,9 +7,9 @@
 
 \setlength{\parskip}{2mm}
 
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[section]
-\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{corollary}{Corollary}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
@@ -800,6 +800,63 @@ and
 Due to these facts, and using \(k(k + 1) \leq 2^{k+1}\), we get \(\log(1 + x) - \frac{2x}{2 + x} \geq 0\). As a consequence:
 \begin{equation*}
 x - (1 + x)\log(1 + x) \leq x\left(\frac{-x}{2 + x}\right) = \frac{-x^{2}}{2 + x} \leq -\frac{x^{2}}{3}
+\end{equation*}
+\end{proof}
+
+\subsection{Sub-Gaussian Random Variables}
+Earlier, we saw Hoeffding's inequality applied to Rademacher random variables. In general, can we say anything about the random variables that satisfy:
+\begin{equation*}
+\Pr\left(\left|\sum_{i=1}^{n}a_{i}X_{i}\right| > t\right) \leq 2\exp\left(-c\frac{t^{2}}{\|a\|_{2}^{2}}\right)
+\end{equation*}
+
+In the special case that \(n=1\) and \(a_{i} = 1\), we have:
+\begin{equation*}
+\Pr\left(|X_{i}| > t\right) \leq 2\exp(-ct^{2})
+\end{equation*}
+
+Such random variables are called \emph{sub-Gaussian random variables}. From Theorem \ref{thm:bounded-hoeffding}, we know that bounded random variables are sub-Gaussian with an appropriate constant \(c > 0\). Incidentally, Gaussian random variables also fall in this class (hence the name). The following lemma proves this:
+\begin{lemma}
+Let \(X \sim \calN(0, 1)\). Then for any \(t > 0\):
+\begin{equation*}
+\Pr(|X| > t) \leq 2\exp\left(-\frac{t^{2}}{2}\right)
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+First, let's consider \(\Pr(X > t)\).
+\begin{equation*}
+\Pr(X > t) = \Pr\left(e^{sX} > e^{st}\right) \leq \frac{\Exp\left[e^{sX}\right]}{e^{st}} = e^{\frac{s^{2}}{2} - st}
+\end{equation*}
+
+Minimizing the upper bound, gives \(s = t\) and consequently:
+\begin{equation*}
+\Pr(X > t) \leq \exp\left(-\frac{t^{2}}{2}\right)
+\end{equation*}
+
+Next, let's consider \(\Pr(X < -t)\). Note that \(\Pr(X < -t) = \Pr(-X > t) = \Pr(X > t)\) since \(X\) is symmetric about \(0\), and we have bounded this earlier. Combining them we get:
+\begin{equation*}
+\Pr(|X| > t) \leq 2\Pr(X > t) \leq 2e^{-\frac{t^{2}}{2}}
+\end{equation*}
+\end{proof}
+
+Now, let's also compute moments of a standard normal random variable:
+\begin{lemma}
+\label{lem:standard-normal-moments}
+Let \(X \sim \calN(0, 1)\). Then for any \(p \geq 1\), we have:
+\begin{equation*}
+||X||_{L^{p}} = \sqrt{2}\left(\frac{\Gamma(\nicefrac{(1 + p)}{2})}{\Gamma(\nicefrac{1}{2})}\right)^{\nicefrac{1}{p}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\begin{equation*}
+\Exp\left[|X|^{p}\right] = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} |x|^{p}e^{-\nicefrac{x^{2}}{2}} dx = \frac{2}{\sqrt{2\pi}}\int_{0}^{\infty} x^{p}e^{-\nicefrac{x^{2}}{2}} dx \overset{(i)}= \frac{\sqrt{2}^{p}}{\sqrt{\pi}}\int_{0}^{\infty} t^{\frac{p+1}{2} - 1} e^{-t} dt = \sqrt{2}^{p}\frac{\Gamma(\nicefrac{(p + 1)}{2})}{\sqrt{\pi}}
+\end{equation*}
+where Step \((i)\) uses the change of variable \(t = \frac{x^{2}}{2}\)
+
+By the definition of the \(L^{p}\) norm, we have:
+\begin{equation*}
+\|X\|_{L^{p}} = \left(\Exp[|X|^{p}]\right)^{\nicefrac{1}{p}} = \sqrt{2}\left(\frac{\Gamma(\nicefrac{(1 + p)}{2})}{\Gamma(\nicefrac{1}{2})}\right)^{\nicefrac{1}{p}}
 \end{equation*}
 \end{proof}
 \end{document}
