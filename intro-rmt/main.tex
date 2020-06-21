@@ -197,9 +197,10 @@ We now go back to our older discussion on approximate isometries. A matrix \(\ba
 where we have used \(K = N\). This might seem as a fragile explanation, however, but motivates future discussions about relating \(\bar{A}\) and \(\bar{A}^{T}\bar{A}\) in our analyses.
 
 \begin{lemma}
-Let \(\delta \in (0, 1)\). If \(B \in \real^{N \times n}\) is a matrix that satisfies:
+\label{lem:approx-isometry}
+If \(B \in \real^{N \times n}\) is a matrix that satisfies:
 \begin{equation*}
-\|B^{T}B - I\|_{2} \leq \delta^{2}
+\|B^{T}B - I\|_{2} \leq \min\{\delta, \delta^{2}\}
 \end{equation*}
 Then \((1 - \delta) \leq \sigma_{\min}(B) \leq \sigma_{\max}(B) \leq (1 + \delta)\)
 
@@ -226,7 +227,7 @@ This leads to:
 1 - \sqrt{\alpha} \leq \sqrt{1 - \alpha} \leq \|Bx\|_{2} \leq \sqrt{1 + \alpha} \leq 1 + \sqrt{\alpha}
 \end{equation*}
 
-Now substitute \(\alpha = \delta^{2}\) to complete the proof for the first statement.
+Now substitute \(\alpha = \delta\) and noting that \(\delta \leq \sqrt{\delta}\) to complete the proof for the first statement.
 
 For the second statement, we know that \(\sigma_{\min}(B) = \sqrt{\lambda_{\min}(B^{T}B)}\) and \(\sigma_{\max}(B) = \sqrt{\lambda_{\max}(B^{T}B)}\). Therefore, the eigenvalues of \(B^{T}B\) lie in the interval \([(1 - \delta)^{2}, (1 + \delta)^{2}]\). This means that the maximum absolute eigenvalue of \(B^{T}B - I\) must be bounded as \(\max\{|(1 - \delta)^{2} - 1|, |(1 + \delta)^{2} - 1|\} \leq \max\{2\delta, 3\delta\} = 3\delta\), and this completes the proof.
 \end{proof}
@@ -286,4 +287,80 @@ Y_{u, v} - Y_{u', v'} = \inner{g}{u - u'} + \inner{h}{v - v'} \\
 \Rightarrow \Exp\left[(Y_{u, v} - Y_{u', v'})^{2}\right] = \underbrace{\Exp\left[(\inner{g}{u - u'})^{2}\right]}_{\Var(\calN(0, \|u - u'\|_{2}^{2}))} + \underbrace{\Exp\left[(\inner{h}{v - v'})^{2}\right]}_{\Var(\calN(0, \|v - v'\|_{2}))} + \underbrace{2\Exp\left[\inner{g}{u - u'}\inner{h}{v - v'}\right]}_{=~0}
 \end{gather*}
 \end{proof}
+
+\subsection{Independent rows}
+First, we will look at rows that are sub-Gaussian. Recall that a random vector \(X \in \real^{p}\) is sub-Gaussian if for any \(v \in S^{p - 1}\)
+\begin{equation*}
+\Pr(|v^{T}X| > t) \leq 2\exp\left(-\frac{t^{2}}{2K^{2}}\right)
+\end{equation*}
+Also, a random vector \(X\) is said to be \emph{isotropic} if \(\Sigma(X) = I\).
+
+The following theorem presents high-probability bounds on the range of singular values, under the aforementioned structure.
+\begin{theorem}
+Let \(A\) be an \(N \times n\) matrix, whose rows are independent isotropic sub-Gaussian random variables. For for every \(t \geq 0\), we have with probability at least \(1 - 2\exp(-ct^{2})\) that:
+\begin{equation*}
+\sqrt{N} - C\sqrt{n} - t \leq \sigma_{\min}(A) \leq \sigma_{\max}(A) \leq \sqrt{N} + C\sqrt{n} + t
+\end{equation*}
+where \(C := C(K)\) where \(K\) is the sub-Gaussian norm \(K = \max_{i} \|A_{i}\|_{\psi_{2}}\).
+\end{theorem}
+
+\begin{proof}
+From the approximate isometry property (Lemma \ref{lem:approx-isometry}), we have for \(B = \frac{A}{\sqrt{N}}\):
+\begin{multline*}
+\|B^{T}B - I\|_{2} \leq \max\{\delta, \delta^{2}\} \Rightarrow 1 - \delta \leq \sigma_{\min}(B) \leq \sigma_{\max}(B) \leq 1 + \delta \\
+\Rightarrow \sqrt{N} - \sqrt{N}\delta \leq \sigma_{\min}(A) \leq \sigma_{\max}(A) \leq \sqrt{N} + \sqrt{N}\delta
+\end{multline*}
+
+So, if we able to show that \(\|B^{T}B - I\|_{2} \leq \max\{\delta, \delta^{2}\}\) for \(\delta = C\frac{\sqrt{n}}{\sqrt{N}} + \frac{t}{\sqrt{N}}\), the proof is complete.
+
+For this, note that we have to primarily control \(\|(B^{T}B - I)x\|_{2}\) for \(x \in S^{n - 1}\). As seen earlier:
+\begin{equation*}
+\max_{x \in S^{n - 1}} \|x^{T}(B^{T}B - I)x\|_{2} \leq \frac{1}{1 - 2\epsilon} \max_{x \in \calN_{\epsilon}(S^{n - 1})} \|x^{T}(B^{T}B - I)x\|_{2} = \frac{1}{1 - 2\epsilon} \max_{x \in \calN_{\epsilon}(S^{n - 1})} \left|\frac{1}{N}\|Ax\|_{2}^{2} - 1\right|
+\end{equation*}
+
+Choose \(\epsilon = \frac{1}{4}\), and hence:
+\begin{equation*}
+\max_{x \in S^{n - 1}} \|x^{T}(B^{T}B - I)x\|_{2} \leq 2\max_{x \in \calN_{\epsilon}(S^{n - 1})} \left|\frac{1}{N}\|Ax\|_{2}^{2} - 1\right|
+\end{equation*}
+
+If remains to show that \(\max\limits_{x \in \calN_{\epsilon}(S^{n - 1})} \left|\frac{1}{N}\|Ax\|_{2}^{2} - 1\right| \leq \frac{\delta}{2}\).
+
+\(\|Ax\|_{2}^{2} = \sum\limits_{i=1}^{N}\inner{A_{i}}{x}^{2} = \sum\limits_{i=1}^{N} Y_{i}^{2}\), where \(Y_{i} = \inner{A_{i}}{x}\) is a sub-Gaussian as well. The square of a sub-Gaussian random variable is sub-exponential. Additionally, note that \(Y_{i}\)s are independent due to the independence of rows of \(A\). Since \(A_{i}\) is isotropic, \(\Exp[Y_{i}^{2}] = 1\), and consequently:
+\begin{equation*}
+\Exp\left[\frac{1}{N}\|Ax\|_{2}^{2}\right] = \Exp\left[\frac{1}{N}\sum_{i=1}^{N}Y_{i}^{2}\right] = 1
+\end{equation*}
+
+Therefore, from a sub-exponential concentration lemma:
+\begin{equation*}
+\Pr\left(\left|\frac{1}{N}\|Ax\|_{2}^{2} - 1\right| \geq \epsilon\right) = \Pr\left(\left|\frac{1}{N}\sum_{i=1}^{N}(Z_{i}^{2} - 1)\right| > \epsilon\right) \leq 2\exp\left(-c\min\left(\frac{\epsilon^{2}}{K_{1}^{2}}, \frac{\epsilon}{K_{1}}\right)N\right)
+\end{equation*}
+where \(K_{1} = \max_{i} \|Z_{i}^{2} - 1\|_{\psi_{1}}\). We can bound \(K_{1}\) as:
+\begin{equation*}
+\|Z_{i}^{2} - 1\|_{\psi_{1}} \overset{(i)}\leq \|2Z_{i}^{2}\|_{\psi_{1}} \leq 4\|Z_{i}\|_{\psi_{2}}^{2} \leq 4K^{2}
+\end{equation*}
+where step \((i)\) follows from a centering lemma.
+\end{proof}
+We also know that:
+\begin{equation*}
+K \geq \|Z_{i}\|_{\psi_{2}} \geq \frac{1}{\sqrt{2}}\left(\Exp[|Z_{i}|^{2}]\right)^{2} = \frac{1}{\sqrt{2}} \Rightarrow 4K^{2} > 1
+\end{equation*}
+
+This gives:
+\begin{equation*}
+\Pr\left(\left|\frac{1}{N}\sum_{i=1}^{N}(Z_{i}^{2} - 1)\right| > \epsilon\right) \leq 2\exp\left(-\frac{c}{16K^{4}}\min\{\epsilon^{2}, \epsilon\}N\right)
+\end{equation*}
+If \(\max\{\delta, \delta^{2}\} = \epsilon\), then \(\min\{\epsilon, \epsilon^{2}\} = \delta^{2}\), this leads to:
+\begin{equation*}
+\Pr\left(\left|\frac{1}{N}\sum_{i=1}^{N}(Z_{i}^{2} - 1)\right| > \epsilon\right) \leq 2\exp\left(-\frac{c}{16K^{4}}\delta^{2}N\right)
+\end{equation*}
+
+We also know that \(\delta\sqrt{N} = C\sqrt{n} + t \Rightarrow \delta^{2}N \geq C^{2}n + t^{2}\).
+\begin{equation*}
+\Rightarrow \Pr\left(\left|\frac{1}{N}\sum_{i=1}^{N}(Z_{i}^{2} - 1)\right| > \epsilon\right) \leq 2\exp\left(-\frac{c'}{K^{4}}n - \frac{c''}{K^{4}}t^{2}\right)
+\end{equation*}
+
+Since we only considered a particular \(x \in \calN_{\epsilon}(S^{p-1})\), the probability that maximum deviation is greater than \(\epsilon\) can be given via the union bound:
+\begin{equation*}
+\Pr\left(\max_{x \in \calN_{\epsilon}(S^{p-1})}\left|\frac{1}{N}\|Ax\|_{2}^{2} - 1\right| \geq \epsilon\right) \leq 9^{n}\cdot 2\exp\left(-\frac{c'}{K^{4}}n - \frac{c''}{K^{4}}t^{2}\right) \leq 2\exp\left(-\frac{c''}{K^{4}}t^{2}\right)
+\end{equation*}
 \end{document}
