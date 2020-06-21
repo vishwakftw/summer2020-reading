@@ -4,6 +4,7 @@
 \usepackage{hyperref}
 \usepackage{nicefrac}
 \usepackage{xcolor}
+\usepackage[sort]{natbib}
 
 \setlength{\parskip}{2mm}
 
@@ -26,7 +27,7 @@
 \newcommand{\calN}{\mathcal{N}}
 \newcommand{\calE}{\mathcal{E}}
 
-\title{Notes for High-Dimensional Probability}
+\title{Notes for High-Dimensional Probability\footnote{\citet{vershynin2019high}}}
 \author{Vishwak Srinivasan}
 
 \date{}
@@ -210,6 +211,7 @@ Consider a real valued random variable \(X\). The expectation of this random var
 
 An application of Lemma \ref{lem:tail-expectation} is to use it to bound the \(p^{th}\) absolute moments via tails:
 \begin{corollary}
+\label{cor:p-abs-moment}
 For any random variable \(X\):
 \begin{equation*}
 \Exp\left[|X|^{p}\right] = \int_{0}^{\infty} pt^{p-1} \Pr(|X| > t) dt
@@ -375,7 +377,7 @@ Second, the lower bound:
 &\geq \left(\frac{1}{t} - \frac{1}{t^{3}}\right)\frac{1}{\sqrt{2\pi}}e^{-\nicefrac{t^{2}}{2}}
 \end{align*}
 
-An alternative proof for the lower bound can be obtained as follows. First note that for \(\phi(z) = \frac{1}{\sqrt{2\pi}}e^{-\nicefrac{z^{2}}{2}}\), we have:
+An alternative proof for the lower bound can be obtained as follows. First note that for \(\phi(z) = \frac{1}{\sqrt{2\pi}}e^{-\nicefrac{z^{2}}{2}}\), we have (see \citep{wainwright2019high}):
 \begin{equation*}
 \phi'(z) = \frac{1}{\sqrt{2\pi}} \cdot -ze^{\nicefrac{-z^{2}}{2}} = -z\phi(z)
 \end{equation*}
@@ -537,7 +539,7 @@ The standard series of steps used in the proof of Theorem \ref{thm:rademacher-ho
 &\leq \frac{1}{\exp(st)}\prod_{i=1}^{n}\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]
 \end{align*}
 
-To bound \(\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]\): let \(Z_{i} = X_{i} - \Exp[X_{i}]\) for \(i \in [n]\). Therefore, we focus on the quantity \(\Exp\left[\exp(s \cdot Z_{i})\right]\). Consider \(Z'_{i}\) to be an independent copy of \(Z_{i}\)
+To bound \(\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]\): let \(Z_{i} = X_{i} - \Exp[X_{i}]\) for \(i \in [n]\). Therefore, we focus on the quantity \(\Exp\left[\exp(s \cdot Z_{i})\right]\). Consider \(Z'_{i}\) to be an independent copy of \(Z_{i}\)\footnote{The proof is adapted from \citep[Example 2.3]{wainwright2019high}}.
 \begin{equation*}
 \Exp_{Z_{i}}\left[\exp(s \cdot Z_{i})\right] = \Exp_{Z_{i}}\left[\exp(s \cdot (Z_{i} - \Exp_{Z'_{i}}[Z'_{i}]))\right] = \Exp_{Z_{i}}\left[\exp(s \cdot (\Exp_{Z'_{i}}[Z_{i} - Z'_{i}]))\right] \leq \Exp_{Z_{i}, Z'_{i}}\left[\exp\left(s \cdot (Z_{i} - Z'_{i})\right)\right]
 \end{equation*}
@@ -858,5 +860,122 @@ By the definition of the \(L^{p}\) norm, we have:
 \begin{equation*}
 \|X\|_{L^{p}} = \left(\Exp[|X|^{p}]\right)^{\nicefrac{1}{p}} = \sqrt{2}\left(\frac{\Gamma(\nicefrac{(1 + p)}{2})}{\Gamma(\nicefrac{1}{2})}\right)^{\nicefrac{1}{p}}
 \end{equation*}
+
+Note that:
+\begin{equation*}
+\Gamma(\nicefrac{(1 + p)}{2}) = \underbrace{\frac{p - 1}{2}\frac{p - 3}{2}\ldots\frac{1}{2}}_{\frac{p}{2} \text{ terms}}\ldots\Gamma(\nicefrac{1}{2}) = O\left(\left(\frac{p}{2}\right)^{\nicefrac{p}{2}}\right) \Rightarrow \left(\frac{\Gamma(\nicefrac{(1 + p)}{2})}{\Gamma(\nicefrac{1}{2})}\right)^{\nicefrac{1}{p}} = O(\sqrt{p})
+\end{equation*}
+which means that \(\|X\|_{L^{p}} = O(\sqrt{p})\).
 \end{proof}
+
+Now, let's look at some properties of sub-Gaussian random variables. Recall that a sub-Gaussian random variable \(X\) is one that satisfies:
+\begin{equation}
+\label{eqn:sub-gaussian}
+\Pr(|X| > t) \leq 2\exp\left(-\frac{t^{2}}{K_{1}^{2}}\right)
+\end{equation}
+for some \(K_{1} > 0\), and \(t \geq 0\). We will see that the following properties are equivalent:
+\begin{lemma}
+Let \(X\) be a sub-Gaussian random variable as defined in Eqn \ref{eqn:sub-gaussian}. The following statement are equivalent:
+\begin{description}
+\item [(i)] \(X\) is sub-Gaussian
+\item [(ii)] \(\|X\|_{L^{p}} \leq K_{2}\sqrt{p}\) for all \(p \geq 1\)
+\item [(iii)] \(\Exp[\exp(\lambda^{2}X^{2})] \leq \exp(K_{3}^{2}\lambda^{2})\) for all \(|\lambda| \leq \frac{1}{K_{3}}\)
+\item [(iv)] \(\Exp\left[\exp\left(\frac{X^{2}}{K_{4}^{2}}\right)\right] \leq 2\)
+\item [(v)] \(\Exp\left[\exp(\lambda X)\right] \leq \exp(K_{5}^{2}\lambda^{2})\) for all \(\lambda \in \real\) (if \(X\) is zero mean sub-Gaussian)
+\end{description}
+\end{lemma}
+
+\begin{proof}
+\begin{description}
+\item [(i) \(\Rightarrow\) (ii)] First, consider \(\Exp[|X|^{p}]\). From Corollary \ref{cor:p-abs-moment}, we have:
+\begin{align*}
+\Exp[|X|^{p}] &= \int_{0}^{\infty} pt^{p-1} \Pr(|X| > t) dt \\
+&\leq \int_{0}^{\infty} 2pt^{p-1} \exp\left(-\frac{t^{2}}{K_{1}^{2}}\right) dt \\
+&= p \int_{0}^{\infty} K_{1}^{p}u^{\frac{p}{2} - 1} \exp(-u) du \\
+&= p K_{1}^{p} \Gamma(\nicefrac{p}{2}) \\
+&\leq 3K_{1}^{p}p\left(\frac{p}{2}\right)^{\nicefrac{p}{2}}
+\end{align*}
+
+This implies: \(\|X\|_{L^{p}} \leq 3K_{1}\sqrt{p}\), and therefore for \(K_{2} \leq 3K_{1}\), we get obtain the proof.
+
+\item [(ii) \(\Rightarrow\) (iii)] By the series expansion:
+\begin{align*}
+\Exp\left[\exp(\lambda^{2}X^{2})\right] &= \Exp\left[\sum_{k=0}^{\infty} \frac{(\lambda^{2}X^{2})^{k}}{k!}\right] \\
+&= 1 + \sum_{k=1}^{\infty} \frac{\lambda^{2k}\Exp[X^{2k}]}{k!} \\
+&\leq 1 + \sum_{k=1}^{\infty} \frac{\lambda^{2k}(2K_{1}^{2k}k\Gamma(k))}{k!} \\
+&= 1 + \sum_{k=1}^{\infty} \lambda^{2k}2K_{1}^{2k} \\
+&\leq \sum_{k=0}^{\infty} 2^{2k}\lambda^{2k}K_{1}^{2k}
+\end{align*}
+
+The above series converges if \(2^{2}\lambda^{2}K_{1}^{2} < 1 \Rightarrow |\lambda| < \frac{1}{2K_{1}}\). If this condition is satisfied:
+\begin{equation*}
+\Exp\left[\exp(\lambda^{2}X^{2})\right] \leq \frac{1}{1 - 4\lambda^{2}K_{1}^{2}} \overset{(i)}\leq e^{8\lambda^{2}K_{1}^{2}}
+\end{equation*}
+where Step \((i)\) is due to Lemma \ref{lem:geometric-series-exponential} where \(4\lambda^{2}K_{1}^{2} \leq \frac{1}{2} \Rightarrow |\lambda| \leq \frac{1}{2\sqrt{2}K_{1}}\). This yields (iii) with \(K_{3} = 2\sqrt{2}K_{1}\).
+
+\item [(iii) \(\Rightarrow\) (iv)] Choose \(\lambda = \frac{1}{\sqrt{2}K_{3}}\) in (iii) to get:
+\begin{equation*}
+\Exp\left[\exp\left(\frac{X^{2}}{2K_{3}^{2}}\right)\right] \leq \exp(\nicefrac{1}{2}) \leq 2
+\end{equation*}
+
+\item [(iv) \(\Rightarrow\) (i)]
+\begin{equation*}
+\Pr\left(\frac{|X|}{K_{4}} > t\right) = \Pr\left(\frac{X^{2}}{K_{4}^{2}} > t^{2}\right) = \Exp\left[\exp\left(\frac{X^{2}}{K_{4}^{2}}\right)\right]\exp(-t^{2}) \leq 2\exp(-t^{2})
+\end{equation*}
+With \(t' = K_{4}t\), we get:
+\begin{equation*}
+\Pr(|X| > t') \leq 2\exp\left(-\frac{t^{2}}{K_{4}^{2}}\right)
+\end{equation*}
+
+\item [(ii) \(\Rightarrow\) (v)]
+From the series expansion:
+\begin{align*}
+\Exp[\exp(\lambda X)] &= \sum_{k=0}^{\infty}\frac{\lambda^{k}}{k!}\Exp[X^{k}] \\
+&\leq 1 + \sum_{k=2}^{\infty} \frac{\lambda^{k}}{k!}\Exp[|X|^{k}] \\
+&\overset{(i)}\leq 1 + 2\sum_{k=1}^{\infty} \frac{\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \\
+&\leq 1 + 2\sum_{k=1}^{\infty} \frac{\lambda^{2k}}{(2k)!} 2K_{1}^{2k}\underbrace{k\Gamma(k)}_{k!} \\
+&\leq 1 + \sum_{k=1}^{\infty} \lambda^{2k}K_{1}^{2k} \frac{2^{k}k!}{(2k)!} \\
+&\leq \sum_{k=0}^{\infty} \frac{\lambda^{2k}(K_{1})^{2k}}{k!} = \exp(\lambda^{2}K_{1}^{2})
+\end{align*}
+where in Step \((i)\) we have bounded odd moments using even moments.
+
+\item [(v) \(\Rightarrow\) (i)]
+\begin{equation*}
+\Pr\left(X > t\right) = \Pr\left(\exp(\lambda X) > \exp(\lambda t)\right) \leq \frac{\Exp\left[\lambda X\right]}{e^{\lambda t}} \leq \Exp\left[\lambda^{2}K_{1}^{2} - \lambda t\right]
+\end{equation*}
+
+Minimizing the upper bound over \(\lambda > 0\) gives:
+\begin{equation*}
+\Pr\left(X > t\right) \leq \exp\left(-\frac{t^{2}}{2K_{1}^{2}}\right)
+\end{equation*}
+
+Analogously, we can obtain:
+\begin{equation*}
+\Pr\left(X < -t\right) \leq \exp\left(-\frac{t^{2}}{2K_{1}^{2}}\right)
+\end{equation*}
+
+Combining these via the union bound gives:
+\begin{equation*}
+\Pr\left(|X| > t\right) \leq 2\exp\left(-\frac{t^{2}}{2K_{1}^{2}}\right)
+\end{equation*}
+\end{description}
+\end{proof}
+
+\begin{remark}
+Note that (ii) states that sub-Gaussian random variables have bounded moments.
+\end{remark}
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+\label{lem:geometric-series-exponential}
+For \(x \in [0, \nicefrac{1}{2}]\), we have that \(\frac{1}{1 - x} \leq e^{2x}\).
+\end{lemma}
+
+\begin{proof}
+Both functions are monotonically increasing in \([0, \nicefrac{1}{2}]\) and satisfy: \(f(0) = g(0)\) and \(f(\nicefrac{1}{2}) \leq g(\nicefrac{1}{2})\). This means that \(f(x) \leq g(x)\) for all \(x \in [0, \nicefrac{1}{2}]\).
+\end{proof}
+
+\newpage
+\bibliography{main}
+\bibliographystyle{plainnat}
 \end{document}
