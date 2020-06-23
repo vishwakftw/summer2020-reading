@@ -932,12 +932,12 @@ From the series expansion:
 \begin{align*}
 \Exp[\exp(\lambda X)] &= \sum_{k=0}^{\infty}\frac{\lambda^{k}}{k!}\Exp[X^{k}] \\
 &\leq 1 + \sum_{k=2}^{\infty} \frac{\lambda^{k}}{k!}\Exp[|X|^{k}] \\
-&\overset{(i)}\leq 1 + 2\sum_{k=1}^{\infty} \frac{\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \\
-&\leq 1 + 2\sum_{k=1}^{\infty} \frac{\lambda^{2k}}{(2k)!} 2K_{1}^{2k}\underbrace{k\Gamma(k)}_{k!} \\
+&\overset{(i)}\leq 1 + \sum_{k=1}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \\
+&\leq 1 + \sum_{k=1}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!} K_{1}^{2k}\underbrace{k\Gamma(k)}_{k!} \\
 &\leq 1 + \sum_{k=1}^{\infty} \lambda^{2k}K_{1}^{2k} \frac{2^{k}k!}{(2k)!} \\
-&\leq \sum_{k=0}^{\infty} \frac{\lambda^{2k}(K_{1})^{2k}}{k!} = \exp(\lambda^{2}K_{1}^{2})
+&\overset{(ii)}\leq \sum_{k=0}^{\infty} \frac{\lambda^{2k}(K_{1})^{2k}}{k!} = \exp(\lambda^{2}K_{1}^{2})
 \end{align*}
-where in Step \((i)\) we have bounded odd moments using even moments.
+where in Step \((i)\) we have bounded odd moments using even moments (Lemma \ref{lem:odd-even-moments}), and in Step \((ii)\) we have used \(\frac{2^{k}k!}{(2k)!} \leq \frac{1}{k!}\) (which follows from \(\left(\frac{2k}{k}\right)^{k} \leq \binom{2k}{k}\)).
 
 \item [(v) \(\Rightarrow\) (i)]
 \begin{equation*}
@@ -962,7 +962,23 @@ Combining these via the union bound gives:
 \end{proof}
 
 \begin{remark}
-Note that (ii) states that sub-Gaussian random variables have bounded moments.
+Note that (ii) states that sub-Gaussian random variables have bounded moments. It is also worth noting that when \(\Exp[X] \neq 0\), we can still bound the moment generating function of \(X\) as follows:
+\begin{corollary}
+Let \(X\) be a non-zero mean sub-Gaussian random variable satisfying \(\Pr(|X| > t) \leq 2\exp\left(-\frac{t^{2}}{K_{1}^{2}}\right)\). Then we have that:
+\begin{equation*}
+\Exp[\exp(\lambda X)] \leq 2\exp(\lambda^{2}K_{1}^{2})
+\end{equation*}
+\end{corollary}
+
+\begin{proof}
+The proof mostly follows from the proof of \textbf{(ii) \(\Rightarrow\) (v)}, except that:
+\begin{equation*}
+\Exp[\exp(\lambda X)] \leq 1 + \Exp[\lambda X] + \sum_{k=1}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \leq 1 + \frac{1}{2} + \frac{\lambda^{2}}{2}\Exp[|X|^{2}] + \sum_{k=1}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \leq 2\sum_{k=0}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}]
+\end{equation*}
+
+We know that \(\sum\limits_{k=0}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \leq \exp(\lambda^{2}K_{1}^{2})\), and this completes the proof.
+\end{proof}
+Therefore, except for a constant factor, the bound on the MGF is the same for non-centered sub-Gaussian random variables.
 \end{remark}
 
 \subsubsection{Auxiliary Lemmata}
@@ -972,7 +988,35 @@ For \(x \in [0, \nicefrac{1}{2}]\), we have that \(\frac{1}{1 - x} \leq e^{2x}\)
 \end{lemma}
 
 \begin{proof}
-Both functions are monotonically increasing in \([0, \nicefrac{1}{2}]\) and satisfy: \(f(0) = g(0)\) and \(f(\nicefrac{1}{2}) \leq g(\nicefrac{1}{2})\). This means that \(f(x) \leq g(x)\) for all \(x \in [0, \nicefrac{1}{2}]\).
+Both functions are monotonically increasing in \([0, \nicefrac{1}{2}]\) and satisfy: \(f(0) = g(0)\) and \(f(\nicefrac{1}{2}) \leq g(\nicefrac{1}{2})\), with no crossings i.e., \(\nexists x \in (0, \nicefrac{1}{2}]\) such that \(f(x) = g(x)\). This means that \(f(x) \leq g(x)\) for all \(x \in [0, \nicefrac{1}{2}]\).
+\end{proof}
+
+\begin{lemma}
+\label{lem:odd-even-moments}
+For a random variable \(X\), we have for \(k \geq 0\):
+\begin{equation*}
+\Exp[|\lambda X|^{2k + 1}] \leq \frac{1}{2}\Exp[|\lambda X|^{2k}] + \frac{1}{2}\Exp[|\lambda X|^{2k + 2}]
+\end{equation*}
+
+As a consequence:
+\begin{equation*}
+\Exp[\exp(\lambda X)] \leq 1 + \Exp[X] + \sum_{k=1}^{\infty}\frac{2^{k}\lambda^{2k}\Exp[|X|^{2k}]}{(2k)!}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+By Cauchy-Schwarz and AM-GM inequality, we have:
+\begin{equation*}
+\Exp[|\lambda X|^{2k + 1}] \leq \sqrt{\Exp[|\lambda X|^{2k}] \Exp[|\lambda X|^{2k + 2}]} \leq \frac{1}{2}\Exp[|\lambda X|^{2k}] + \frac{1}{2}\Exp[|\lambda X|^{2k + 2}]
+\end{equation*}
+
+Now, by the series expansion:
+\begin{align*}
+\Exp[\exp(\lambda X)] &\leq 1 + \Exp[\lambda X] + \sum_{k=2}^{\infty} \frac{\lambda^{k} \Exp[X^{k}]}{k!} \\
+&\leq 1 + \Exp[X] + \sum_{k=2}^{\infty} \frac{\lambda^{k} \Exp[|X|^{k}]}{k!} \\
+&\leq 1 + \Exp[X] + \sum_{k=1}^{\infty} \Exp[|X|^{2k}]\left(\frac{\lambda^{2k}}{(2k)!} + \frac{1}{2}\left(\frac{\lambda^{2k}}{(2k - 1)!} + \frac{\lambda^{2k}}{(2k + 1)!}\right)\right) \\
+&\leq 1 + \Exp[X] + \sum_{k=1}^{\infty} \Exp[|X|^{2k}]\frac{\lambda^{2k}2^{k}}{(2k)!}
+\end{align*}
 \end{proof}
 
 \newpage
