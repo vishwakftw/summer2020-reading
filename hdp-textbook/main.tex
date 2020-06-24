@@ -27,6 +27,8 @@
 \newcommand{\calN}{\mathcal{N}}
 \newcommand{\calE}{\mathcal{E}}
 
+\newcommand{\vscomment}[1]{\textcolor{blue}{#1}}
+
 \title{Notes for High-Dimensional Probability\footnote{\citet{vershynin2019high}}}
 \author{Vishwak Srinivasan}
 
@@ -579,7 +581,10 @@ which leads to:
 \end{proof}
 
 \begin{remark}
-The introduction and use of the Rademacher random variable is known as the \emph{symmetrization trick}. The result of Hoeffding that gives the improved bound on the MGF is classically know as \emph{Hoeffding's Lemma}.
+The introduction and use of the Rademacher random variable is known as the \emph{symmetrization trick}. The result of Hoeffding that gives the improved bound on the MGF is classically know as \emph{Hoeffding's Lemma}. Setting \(n = 1\), results in:
+\begin{equation*}
+\Pr\left(|X_{1} - \Exp[X_{1}]| > t\right) \leq 2\exp\left(-\frac{2t^{2}}{(u - l)^{2}}\right)
+\end{equation*}
 
 The basic idea is to obtain bounds on the MGF. We will see later about classes of distributions that have a bounded MGF, and therefore allow for the application of this theorem despite being unbounded.
 \end{remark}
@@ -874,7 +879,9 @@ Now, let's look at some properties of sub-Gaussian random variables. Recall that
 \Pr(|X| > t) \leq 2\exp\left(-\frac{t^{2}}{K_{1}^{2}}\right)
 \end{equation}
 for some \(K_{1} > 0\), and \(t \geq 0\). We will see that the following properties are equivalent:
+
 \begin{lemma}
+\label{lem:sub-gauss-equiv}
 Let \(X\) be a sub-Gaussian random variable as defined in Eqn \ref{eqn:sub-gaussian}. The following statement are equivalent:
 \begin{description}
 \item [(i)] \(X\) is sub-Gaussian
@@ -941,7 +948,7 @@ where in Step \((i)\) we have bounded odd moments using even moments (Lemma \ref
 
 \item [(v) \(\Rightarrow\) (i)]
 \begin{equation*}
-\Pr\left(X > t\right) = \Pr\left(\exp(\lambda X) > \exp(\lambda t)\right) \leq \frac{\Exp\left[\lambda X\right]}{e^{\lambda t}} \leq \Exp\left[\lambda^{2}K_{1}^{2} - \lambda t\right]
+\Pr\left(X > t\right) = \Pr\left(\exp(\lambda X) > \exp(\lambda t)\right) \leq \frac{\Exp\left[\exp(\lambda X)\right]}{e^{\lambda t}} \leq \exp(\lambda^{2}K_{1}^{2} - \lambda t)
 \end{equation*}
 
 Minimizing the upper bound over \(\lambda > 0\) gives:
@@ -979,7 +986,123 @@ The proof mostly follows from the proof of \textbf{(ii) \(\Rightarrow\) (v)}, ex
 We know that \(\sum\limits_{k=0}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \leq \exp(\lambda^{2}K_{1}^{2})\), and this completes the proof.
 \end{proof}
 Therefore, except for a constant factor, the bound on the MGF is the same for non-centered sub-Gaussian random variables.
+
+Additionally, an interesting observation is that \textbf{(iii)} is equivalent to claiming that \(\Exp[\exp(\lambda^{2}X^{2})]\) is finite in a bounded neighbourhood of \(0\), whose radius is \(\frac{1}{K_{3}}\). We can verify this for the standard normal distribution.
+
+\begin{multline*}
+\Exp[\exp(\lambda^{2}X^{2})] = \int_{-\infty}^{\infty} e^{\lambda^{2}x^{2}} p_{X}(x) dx = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} e^{\frac{x^{2}}{2}(2\lambda^{2} - 1)} dx = \sqrt{\frac{2}{\pi}}\int_{0}^{\infty} e^{\frac{x^{2}}{2}(2\lambda^{2} - 1)} dx \\= \begin{cases} \frac{1}{\sqrt{1 - 2\lambda^{2}}} & \text{if } \lambda \leq \frac{1}{\sqrt{2}} \\ \infty & \text{o.w.} \end{cases}
+\end{multline*}
 \end{remark}
+
+\comprule
+
+With these equivalences, let's bring some concreteness to the constants used above. We define the \emph{sub-Gaussian norm} of a sub-Gaussian random variable \(X\) as:
+\begin{equation*}
+\|X\|_{\psi_{2}} = \inf\left\{t > 0 : \Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] \leq 2\right\}
+\end{equation*}
+Recall that \textbf{(iv)} in Lemma \ref{lem:sub-gauss-equiv}, we note that a sub-Gaussian random variable satisfied the condition defining the set with some constant. The sub-Gaussian norm is merely the tightest constant. By terminology, this is a norm, which means:
+\begin{itemize}
+\item For a random variable whose support is \(0\), the norm \(\|\mathbf{0}\|_{\psi_{2}} = 0\).
+\item For \(\alpha > 0\), \(\|\alpha X\|_{\psi_{2}} = \alpha \|X\|_{\psi_{2}}\).
+\item For two sub-Gaussian random variables \(X\) and \(Y\), we have \(\|X + Y\|_{\psi_{2}} \leq \|X\|_{\psi_{2}} + \|Y\|_{\psi_{2}}\).
+\end{itemize}
+
+Now, since \(\|X\|_{\psi_{2}}\) is the smallest value \(t\) such that \(\Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] \leq 2\) and by the equivalences in Lemma \ref{lem:sub-gauss-equiv}, we can restate the equivalent statements as follows:
+\begin{description}
+\item [(i)] \(\Pr(|X| > t) \leq 2\exp\left(-\frac{C_{1}t^{2}}{\|X\|_{\psi_{2}}}\right)\) for all \(t \geq 0\)
+\item [(ii)] \(\|X\|_{L^{p}} \leq C_{2}\|X\|_{\psi_{2}}\sqrt{p}\) for all \(p \geq 1\)
+\item [(iii)] \(\Exp\left[\exp(\lambda^{2}X^{2})\right] \leq \exp(C_{3}\lambda^{2}\|X\|_{\psi_{2}}^{2})\) for \(\lambda\) satisfying \(|\lambda| \leq \frac{1}{\sqrt{C_{3}} \|X\|_{\psi_{2}}}\)
+\item [(iv)] If \(\Exp[X] = 0\), then \(\Exp[\exp(\lambda X)] \leq \exp(C_{4}\lambda^{2}\|X\|_{\psi_{2}}^{2})\) for \(\lambda \in \real\)
+\end{description}
+where \(C_{1}, C_{2}, C_{3}, C_{4}\) are universal constants.
+
+Now, let's try computing the \emph{sub-gaussian norms} for common sub-Gaussian distributions.
+\begin{enumerate}
+\item Gaussian distribution. Let \(X \sim \calN(0, \sigma^{2})\). Then:
+\begin{equation*}
+\Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] = \begin{cases} \frac{1}{\sigma}\left(\frac{1}{\sigma^{2}} - \frac{1}{t^{2}}\right)^{-1} & \text{if } t > \sigma \\ \infty & \text{o.w.} \end{cases}
+\end{equation*}
+
+For the LHS to be \(\leq 2\), \(t \geq \frac{4}{3}\sigma \Rightarrow \|X\|_{\psi_{2}} = C\sigma\). \vscomment{Why is it supposed to be \(\|X\|_{\psi_{2}} \leq C\sigma\) instead?}
+
+\item Rademacher distribution. Let \(X \sim \mathrm{Rad}\). Then:
+\begin{equation*}
+\Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] = e^{\frac{1}{t^{2}}} \leq 2 \Rightarrow \|X\|_{\psi_{2}} = \frac{1}{\sqrt{\log(2)}}
+\end{equation*}
+\end{enumerate}
+
+An important result concerning the maximum of a sequence of sub-Gaussian random variables is next.
+\begin{theorem}
+\label{thm:max-inf-sequence}
+Let \(\{X_{i}\}_{i=1}^{\infty}\) be a sequence of sub-Gaussian random variables, that are not necessarily independent with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{\infty}\). Then:
+\begin{equation*}
+\Exp\left[\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}}\right] \leq CK
+\end{equation*}
+where \(C > 0\) is a universal constant and \(K = \max\limits_{i} \|X_{i}\|_{\psi_{2}}\).
+\end{theorem}
+
+\begin{proof}
+First note that \(\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}}\) is a positive random variable. This allows us to write:
+\begin{equation*}
+\Exp\left[\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}}\right] = \int_{0}^{\infty} \Pr\left(\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}} > t\right) dt
+\end{equation*}
+
+Now:
+\begin{equation*}
+\Pr\left(\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}} > t\right) \leq \Pr\left(\bigcup_{i} \left\{\frac{|X_{i}|}{\sqrt{1 + \log(i)}} > t\right\}\right) \leq \sum_{i=1}^{\infty} \Pr\left(\frac{|X_{i}|}{\sqrt{1 + \log(i)}} > t\right)
+\end{equation*}
+
+Back to the integral - now, we will partition in the integral into two parts, one where \(\frac{ct^{2}}{K^{2}} \geq 2\), thereby, leading to convergence of the sum, and one where \(\frac{ct^{2}}{K^{2}} \leq 2\), where we will simply bound the tail probability by \(1\).
+
+\begin{align*}
+\Exp\left[\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}}\right] &= \int_{0}^{\frac{2K}{\sqrt{c}}} \Pr\left(\max_{i} \frac{|X_{i}|}{\sqrt{1 + \log(i)}} > t\right) dt + \int_{\frac{2K}{\sqrt{c}}}^{\infty} \sum_{i=1}^{\infty} \Pr\left(\frac{|X_{i}|}{\sqrt{1 + \log(i)}} > t\right) dt \\
+&\leq \frac{2K}{\sqrt{c}} + \int_{\frac{2K}{\sqrt{c}}}^{\infty} \sum_{i=1}^{\infty} 2\exp\left(-\frac{ct^{2}(1 + \log(i))}{\|X_{i}\|^{2}_{\psi_{2}}}\right) dt \\
+&\leq \frac{2K}{\sqrt{c}} + \int_{\frac{2K}{\sqrt{c}}}^{\infty} \sum_{i=1}^{\infty} 2\exp\left(-\frac{ct^{2}(1 + \log(i))}{K^{2}}\right) dt \\
+&= \frac{2K}{\sqrt{c}} + \int_{\frac{2K}{\sqrt{c}}}^{\infty} \sum_{i=1}^{\infty} 2\left(\frac{1}{ei}\right)^{\frac{ct^{2}}{K^{2}}} dt \\
+&\leq \frac{2K}{\sqrt{c}} + \int_{\frac{2K}{\sqrt{c}}}^{\infty} 2e^{-\frac{ct^{2}}{K^{2}}} \sum_{i=1}^{\infty} \left(\frac{1}{i}\right)^{2} dt \\
+&\leq \frac{2K}{\sqrt{c}} + \frac{\pi^{2}}{3}\int_{0}^{\infty} e^{-\frac{ct^{2}}{K^{2}}} dt \\
+&= \frac{2K}{\sqrt{c}} + \frac{\pi^{2}}{3}\frac{K\sqrt{2\pi}}{\sqrt{c}} = CK
+\end{align*}
+where \(C = \frac{2}{\sqrt{c}}\left(1 + \frac{\pi^{\nicefrac{5}{2}}}{3\sqrt{2}}\right)\)
+\end{proof}
+
+This is in the asymptotic regime, so in we were given \(n\) sub-Gaussian random variables, we have the following corollary:
+\begin{corollary}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of sub-Gaussian random variables, that are not necessarily independent with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\). Then:
+\begin{equation*}
+\Exp\left[\max_{i}|X_{i}|\right] \leq CK\sqrt{\log(n)}
+\end{equation*}
+for \(n \geq 2\).
+\end{corollary}
+
+\begin{proof}
+For \(n \geq 2\), we have that:
+\begin{equation*}
+\frac{1}{\sqrt{1 + \log(i)}} \geq \frac{1}{\sqrt{2\log(n)}} \enskip \forall \enskip i \in [n] \Rightarrow \Exp\left[\max_{i}\frac{|X_{i}|}{\sqrt{1 + \log(i)}}\right] \geq \Exp\left[\max_{i}\frac{|X_{i}|}{\sqrt{2\log(n)}}\right]
+\end{equation*}
+
+In the proof of Theorem \ref{thm:max-inf-sequence}, we used the fact that \(n \to \infty\) to obtain the series \(\sum\limits_{i=1}^{\infty} \frac{1}{i^{2}}\). Since the summand is positive, the partial sum can be bounded by the series to get:
+\begin{equation*}
+\Exp\left[\max_{i}\frac{|X_{i}|}{\sqrt{2\log(n)}}\right] \leq \Exp\left[\max_{i}\frac{|X_{i}|}{\sqrt{1 + \log(i)}}\right] \leq CK \Rightarrow \Exp\left[\max_{i}|X_{i}|\right] \leq CK\sqrt{2\log(n)}
+\end{equation*}
+and this completes the proof.
+
+An alternative proof can be given using Jensen's inequality as follows (from \cite[Lemma 2.2]{devroye2012combinatorial}).
+Note that \(\max_{i \in [n]} \max\{X_{i}, -X_{i}\} = \max_{i \in [n]} |X_{i}|\). Therefore, consider a sequence of \(2n\) random variables \(\{Y_{i}\}_{i=1}^{2n}\), where \(Y_{i} = \begin{cases} X_{i} & \text{if } i \mod 2 = 0 \\ -X_{i} & \text{o.w.} \end{cases}\).
+\begin{align*}
+\exp\left(\lambda \Exp\left[\max_{i} |X_{i}|\right]\right) &= \exp\left(\lambda \Exp\left[\max_{i} Y_{i}\right]\right) \\
+&\leq \Exp\left[\exp\left(\lambda \max_{i}Y_{i}\right)\right] \\
+&= \Exp\left[\max_{i} \exp\left(\lambda Y_{i}\right)\right] \\
+&\leq \sum_{i=1}^{2n} \Exp\left[\exp(\lambda Y_{i})\right] \\
+&\leq 4n \exp\left(C\lambda^{2}K^{2}\right) \\
+\Rightarrow \Exp\left[\max_{i} |X_{i}|\right] &\leq \frac{\log(4n)}{\lambda} + C\lambda K^{2} \qquad (\lambda > 0)
+\end{align*}
+
+The tightest upper bound can be obtained by \(\lambda = \sqrt{\frac{\log(4n)}{CK^{2}}}\) to get:
+\begin{equation*}
+\Exp\left[\max_{i} |X_{i}|\right] \leq C'K\sqrt{\log(4n)}
+\end{equation*}
+\end{proof}
 
 \subsubsection{Auxiliary Lemmata}
 \begin{lemma}
