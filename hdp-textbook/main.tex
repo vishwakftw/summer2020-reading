@@ -28,6 +28,7 @@
 \newcommand{\calE}{\mathcal{E}}
 
 \newcommand{\vscomment}[1]{\textcolor{blue}{#1}}
+\newcommand{\TODO}{\textcolor{red}{TODO}}
 
 \title{Notes for High-Dimensional Probability\footnote{\citet{vershynin2019high}}}
 \author{Vishwak Srinivasan}
@@ -1104,6 +1105,58 @@ The tightest upper bound can be obtained by \(\lambda = \sqrt{\frac{\log(4n)}{CK
 \end{equation*}
 \end{proof}
 
+\begin{remark}
+The alternative proof provides a general strategy to deal with maxima of absolute random variables, and indicates that this yields a multiplicative constant factor in looseness. However, this cannot be used when the independence condition is required, as \(|X_{i}| = \max\{X_{i}, -X_{i}\}\) means that the new set of \(2n\) random variables are no longer independent.
+\end{remark}
+
+\comprule
+
+This is tight upto constant factors, as shown in the lemma below:
+\begin{lemma}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent standard normal variables. Then:
+\begin{equation*}
+\Exp\left[\max_{i} X_{i}\right] \geq c\sqrt{\log(n)}
+\end{equation*}
+where \(c\) is a universal constant.
+\end{lemma}
+
+\begin{proof}
+\TODO
+\end{proof}
+
+One other interesting fact to know is about the linear combination of independent sub-Gaussian random variables. As a motivating example, let's look at the linear combination of independent normal variables. We are familiar with the following result:
+\begin{equation*}
+\sum_{i=1}^{n} a_{i}X_{i} \sim \calN\left(\sum_{i=1}^{n} a_{i}\mu_{i}, \sum_{i=1}^{n} a_{i}^{2}\sigma_{i}^{2}\right)
+\end{equation*}
+This follows from analyzing the MGF of random variable \(Y = \sum\limits_{i=1}^{n} X_{i}\), and using the independence condition to break to MGF into a product. One can expect such a result for sub-Gaussian random variables as well.
+
+\begin{lemma}
+\label{lem:sum-sub-gauss}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) independent sub-Gaussian random variables with mean \(0\), and sub-Gaussian norms \(\{\|X\|_{\psi_{2}}\}_{i=1}^{n}\). Then, \(Y = \sum\limits_{i=1}^{n} a_{i}X_{i}\) is sub-Gaussian with sub-Gaussian norm satisfying:
+\begin{equation*}
+\|Y\|_{\psi_{2}} \leq \sqrt{C\sum_{i=1}^{n}a_{i}^{2}\|X_{i}\|^{2}_{\psi_{2}}} \leq \sqrt{C\|a\|_{2}^{2}K^{2}}
+\end{equation*}
+where \(K = \max\limits_{i} \|X_{i}\|_{\psi_{2}}\), and \(C\) is a universal constant.
+\end{lemma}
+
+\begin{proof}
+As remarked earlier, we will look at the MGF of \(Y\).
+
+\begin{align*}
+\Exp\left[e^{\lambda Y}\right] &= \Exp\left[\exp\left(\sum_{i=1}^{n} \lambda a_{i}X_{i}\right)\right] \\
+&= \prod_{i=1}^{n}\Exp\left[e^{(\lambda a_{i})X_{i}}\right] \\
+&\leq \prod_{i=1}^{n}e^{C_{i}\lambda^{2}a_{i}^{2}\|X_{i}\|_{\psi_{2}}^{2}} = \exp\left(C\lambda^{2}\sum_{i=1}^{n}a{i}^{2}\|X_{i}\|^{2}_{\psi_{2}}\right)
+\end{align*}
+The final step uses:
+\begin{equation*}
+\sum_{i=1}^{n}a{i}^{2}\|X_{i}\|^{2}_{\psi_{2}} \leq \sum_{i=1}^{n}a_{i}^{2}K^{2} = \|a\|_{2}^{2}K^{2}
+\end{equation*}
+\end{proof}
+
+\begin{remark}
+Now, since we have shown that \(Y\) is sub-Gaussian, by manner of equivalences in Lemma \ref{lem:sub-gauss-equiv}, we can derive a concentration inequality for general sub-Gaussian random variables.
+\end{remark}
+
 \subsubsection{Auxiliary Lemmata}
 \begin{lemma}
 \label{lem:geometric-series-exponential}
@@ -1141,6 +1194,16 @@ Now, by the series expansion:
 &\leq 1 + \Exp[X] + \sum_{k=1}^{\infty} \Exp[|X|^{2k}]\frac{\lambda^{2k}2^{k}}{(2k)!}
 \end{align*}
 \end{proof}
+
+\subsection{Hoeffding's and Khintchine Inequalities for sub-Gaussian random variables}
+In Lemma \ref{lem:sum-sub-gauss}, we saw that a sum of independent sub-Gaussian random variables is sub-Gaussian. Following the remark from earlier, we have the generalized Hoeffding's inequality:
+\begin{corollary}
+\label{cor:hoeffding-sub-gaussian}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian random variables with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\). Then:
+\begin{equation*}
+\Pr\left(\left|\sum_{i=1}^{n} a_{i}X_{i}\right| > t\right) \leq 2\exp\left(-\frac{ct^{2}}{\sum\limits_{i=1}^{n}a_{i}\|X_{i}\|_{\psi_{2}}^{2}}\right) \leq 2\exp\left(-\frac{ct^{2}}{\|a\|_{2}^{2}K^{2}}\right)
+\end{equation*}
+\end{corollary}
 
 \newpage
 \bibliography{main}
