@@ -1205,6 +1205,59 @@ Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian
 \end{equation*}
 \end{corollary}
 
+Khintchine inequalities are a collection of inequalities providing upper and lower bounds for \(L^{p}\) norms of linear combination of independent sub-Gaussian random variables. We state them formally in Lemmas \ref{lem:khintchine-p-geq-2} and \ref{lem:khintchine-p-1}.
+
+\begin{lemma}
+\label{lem:khintchine-p-geq-2}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian random variables with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\). Then for \(a \in \real^{n}\) and \(p \geq 2\), we have that:
+\begin{equation*}
+\|a\|_{2} \leq \left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{p}} \leq C\sqrt{p}K\|a\|_{2}
+\end{equation*}
+where \(C\) is a universal constant, and \(K = \max\limits_{i} \|X_{i}\|_{\psi_{2}}\).
+\end{lemma}
+
+\begin{proof}
+We know from Corollary \ref{cor:hoeffding-sub-gaussian} that the linear combination of independent sub-Gaussian random variables are sub-Gaussian with sub-Gaussian norm \(\leq K\|a\|_{2}\). By the equivalences (Lemma \ref{lem:sub-gauss-equiv}), we have that:
+\begin{equation*}
+\left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{p}} \leq C \sqrt{p} K\|a\|_{2} \enskip \forall \enskip p \geq 1
+\end{equation*}
+
+We also know that: \(\|X\|_{L^{2}} \leq \|X\|_{L^{p}}\) for \(p \geq 2\), which gives:
+\begin{equation*}
+\left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{p}} \geq \left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{2}} = \sqrt{\Exp\left[\left|\sum_{i=1}^{n}a_{i}X_{i}\right|^{2}\right]} = \sqrt{\sum_{i=1}^{n}a_{i}^{2}} = \|a\|_{2}
+\end{equation*}
+\end{proof}
+
+\begin{lemma}
+\label{lem:khintchine-p-1}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian random variables with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\). Then for \(a \in \real^{n}\), we have that:
+\begin{equation*}
+c(K)\|a\|_{2} \leq \left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{1}} \leq \|a\|_{2}
+\end{equation*}
+where \(c(K)\) is a constant depending on \(K\) where \(K = \max\limits_{i} \|X_{i}\|_{\psi_{2}}\).
+\end{lemma}
+
+\begin{proof}
+The upper bound follows from the fact that \(\|X\|_{L^{1}} \leq \|X\|_{L^{2}}\) for any random variable. The proof of \ref{lem:khintchine-p-geq-2} derives \(\left\|\sum\limits_{i=1}^{n} a_{i}X_{i}\right\|_{L^{2}}\).
+
+By Cauchy-Schwarz:
+\begin{equation*}
+\Exp[|X|^{k}] \leq \sqrt{\Exp[|X|^{k - 1}]\Exp[|X|^{k + 1}]}
+\end{equation*}
+For \(k = 2\), we get: \(\Exp[X^{2}] \leq \sqrt{\Exp[|X|]} \sqrt{\Exp[|X|^{3}]}\).
+
+From Lemma \ref{lem:khintchine-p-geq-2}, we know that for \(Y = \sum\limits_{i=1}^{n}a_{i}X_{i}\)
+\begin{itemize}
+\item \(\Exp[|Y|^{3}] \leq CK^{3}\|a\|_{2}^{3}\)
+\item \(\Exp[|Y|^{2}] \geq \|a\|_{2}^{2}\)
+\end{itemize}
+
+Assembling them together, we get:
+\begin{equation*}
+\Exp[|Y|] \geq \frac{\|a\|_{2}^{4}}{CK^{3}\|a\|_{2}^{3}} = c(K)\|a\|_{2}
+\end{equation*}
+\end{proof}
+
 \newpage
 \bibliography{main}
 \bibliographystyle{plainnat}
