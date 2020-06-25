@@ -1030,7 +1030,13 @@ For the LHS to be \(\leq 2\), \(t \geq \frac{4}{3}\sigma \Rightarrow \|X\|_{\psi
 \begin{equation*}
 \Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] = e^{\frac{1}{t^{2}}} \leq 2 \Rightarrow \|X\|_{\psi_{2}} = \frac{1}{\sqrt{\log(2)}}
 \end{equation*}
+
+\begin{remark}
+For random variables with support \(\{-a, a\}\), the sub-Gaussian norm is \(\|X\|_{\psi_{2}} = \frac{a}{\sqrt{\log(2)}}\). This follows from \(\|.\|_{\psi_{2}}\) being a norm.
+\end{remark}
 \end{enumerate}
+
+\comprule
 
 An important result concerning the maximum of a sequence of sub-Gaussian random variables is next.
 \begin{theorem}
@@ -1195,7 +1201,7 @@ Now, by the series expansion:
 \end{align*}
 \end{proof}
 
-\subsection{Hoeffding's and Khintchine Inequalities for sub-Gaussian random variables}
+\subsection{Hoeffding's and Khintchine Inequalities for sub-Gaussian random variables, Centering}
 In Lemma \ref{lem:sum-sub-gauss}, we saw that a sum of independent sub-Gaussian random variables is sub-Gaussian. Following the remark from earlier, we have the generalized Hoeffding's inequality:
 \begin{corollary}
 \label{cor:hoeffding-sub-gaussian}
@@ -1256,6 +1262,104 @@ Assembling them together, we get:
 \begin{equation*}
 \Exp[|Y|] \geq \frac{\|a\|_{2}^{4}}{CK^{3}\|a\|_{2}^{3}} = c(K)\|a\|_{2}
 \end{equation*}
+\end{proof}
+
+\begin{remark}
+For the proof to mean something, it is worth noting that \(c(K) \leq 1\).
+\end{remark}
+
+\comprule
+
+\begin{lemma}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian random variables with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\). Then for \(a \in \real^{n}\) and \(p \in (0, 2)\), we have that:
+\begin{itemize}
+\item If \(p \in (1, 2)\), then:
+\begin{equation*}
+\frac{\|a\|_{2}}{C_{1}K}\sqrt{\frac{p}{p - 1}} \leq \left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{p}} \leq \|a\|_{2}
+\end{equation*}
+
+\item If \(p \in (0, 1)\), then:
+\begin{equation*}
+\left(\frac{C_{2}}{K^{5}}\right)^{\nicefrac{1}{p}}\|a\|_{2} \leq \left\|\sum_{i=1}^{n} a_{i}X_{i}\right\|_{L^{p}} \leq c(K)\|a\|_{2}
+\end{equation*}
+\end{itemize}
+where \(C_{1}, C_{2}\) are universal constants, \(c(K)\) is a constant depending of \(K\) where \(K = \max\limits_{i} \|X_{i}\|_{\psi_{2}}\).
+\end{lemma}
+
+\begin{proof}
+We will break it down into two cases:
+\begin{description}
+\item [\(p \in (1, 2)\):] By Holder's inequality: if \(p \in (1, 2)\), then \(q \in (2, \infty)\). We therefore have:
+\begin{equation*}
+\Exp[Y^{2}] \leq \left(\Exp\left[|Y|^{p}\right]\right)^{\frac{1}{p}} \left(\Exp\left[|Y|^{q}\right]\right)^{\frac{1}{q}}
+\end{equation*}
+
+We know that \(\|Y\|_{q} \leq CK\sqrt{q}\|a\|_{2}\) and \(\Exp[Y^{2}] = \|a\|_{2}^{2}\) for \(Y = \sum\limits_{i=1}^{n} a_{i}X_{i}\). Therefore:
+\begin{equation*}
+\|Y\|_{L^{p}} \geq \frac{\|a\|_{2}}{CK}\sqrt{\frac{p}{p - 1}}
+\end{equation*}
+
+The upper bound is trivial since \(\|Y\|_{L^{p}} \leq \|Y\|_{L^{2}} = \|a\|\).
+
+\item [\(p \in (0, 1)\):] By Cauchy Schwarz:
+\begin{equation*}
+\Exp[|Y|^{p+2}] \leq \sqrt{\Exp[|Y|^{p}]}\sqrt{\Exp[|Y|^{p+4}]}
+\end{equation*}
+
+We know that since \(p \in (0, 1)\), \(p + 4 \in (4, 5)\), and hence \(\Exp[|Y|^{p+2}] \leq \|Y\|_{L^{5}}^{p+2} \leq CK^{p+4}\|a\|_{2}^{p+4}\).
+Similarly, \(p + 2 \in (2, 3)\), and hence \(\Exp[|Y|^{p+2}] \geq \|Y\|_{L^{2}}^{p+2} = \|a\|_{2}^{p+2}\).
+
+Therefore:
+\begin{equation*}
+\Exp[|Y|^{p}] \geq \frac{\|a\|_{2}^{2p + 4}}{CK^{p + 4}\|a\|_{2}^{p + 4}} = \frac{C}{K^{5}} \|a\|_{2}^{p} \Rightarrow \|Y\|_{L^{p}} \geq \left(\frac{C}{K^{5}}\right)^{\nicefrac{1}{p}} \|a\|_{2}
+\end{equation*}
+
+The upper bound is trivial since \(\|Y\|_{L^{p}} \leq \|Y\|_{L^{1}} \leq c(K)\|a\|_{2}\).
+\end{description}
+\end{proof}
+
+\begin{remark}
+Note that the proof for the case when \(p \in (0, 1)\), the bounds on \(p\) where ``boosted'' by adding a suitably large constant. A larger ``boost'' would increase the effect of \(K\) in the lower bound.
+\end{remark}
+
+\comprule
+
+While we are still in the topic of sub-Gaussian norms, we will now discuss an important concept called \emph{centering}. This concerns the sub-Gaussianity of non-zero mean sub-Gaussian random variables once centered.
+
+\begin{lemma}
+\label{lem:centering}
+Let \(X\) be a sub-Gaussian random variable with non-zero mean and sub-Gaussian norm \(\|X\|_{\psi_{2}}\). Then:
+\begin{equation*}
+\|X - \Exp[X]\|_{\psi_{2}} \leq C\|X\|_{\psi_{2}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+We first use the fact that \(\|.\|_{\psi_{2}}\) is a norm, and therefore triangle inequality holds.
+\begin{equation*}
+\|X - \Exp[X]\|_{\psi_{2}} \leq \|X\|_{\psi_{2}} + \|\Exp[X]\|_{\psi_{2}} \overset{(i)}\leq \|X\|_{\psi_{2}} + \frac{|\Exp[X]|}{\sqrt{\log(2)}} \leq \|X\|_{\psi_{2}} + \frac{\Exp[|X|]}{\sqrt{\log(2)}} \leq C\|X\|_{\psi_{2}}
+\end{equation*}
+where in step \((i)\) we have used the fact that \(\Exp[X]\) is a constant random variable, and thus:
+\begin{equation*}
+\Exp\left[\exp\left(\frac{\Exp[X]^{2}}{t^{2}}\right)\right] = \exp\left(\frac{\Exp[X]^{2}}{t^{2}}\right) \leq 2 \Rightarrow t \geq \frac{|\Exp[X]|}{\sqrt{\log(2)}}
+\end{equation*}
+\end{proof}
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+For any random variable \(X\), we have:
+\begin{equation*}
+\|X - \Exp[X]\|_{L^{2}} \leq \|X\|_{L^{2}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+\|X - \Exp[X]\|_{L^{2}} &= \sqrt{\Exp[|X - \Exp[X]|^{2}]} \\
+&= \sqrt{\Exp[X^{2}] + \Exp[X]^{2} - 2|\Exp[X]|\Exp[|X|]} \\
+&\leq \sqrt{\Exp[X^{2}] - \Exp[X]^{2}} \\
+&\leq \sqrt{\Exp[X^{2}]} = \|X\|_{L^{2}}
+\end{align*}
 \end{proof}
 
 \newpage
