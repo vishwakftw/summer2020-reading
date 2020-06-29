@@ -5,6 +5,7 @@
 \usepackage{nicefrac}
 \usepackage{xcolor}
 \usepackage[sort]{natbib}
+\usepackage{pgfplots}
 
 \setlength{\parskip}{2mm}
 
@@ -883,7 +884,7 @@ for some \(K_{1} > 0\), and \(t \geq 0\). We will see that the following propert
 
 \begin{lemma}
 \label{lem:sub-gauss-equiv}
-Let \(X\) be a sub-Gaussian random variable as defined in Eqn \ref{eqn:sub-gaussian}. The following statement are equivalent:
+Let \(X\) be a sub-Gaussian random variable as defined in Eqn \ref{eqn:sub-gaussian}. The following statements are equivalent:
 \begin{description}
 \item [(i)] \(X\) is sub-Gaussian
 \item [(ii)] \(\|X\|_{L^{p}} \leq K_{2}\sqrt{p}\) for all \(p \geq 1\)
@@ -1361,6 +1362,47 @@ For any random variable \(X\), we have:
 &\leq \sqrt{\Exp[X^{2}]} = \|X\|_{L^{2}}
 \end{align*}
 \end{proof}
+
+\subsection{Sub-Exponential Random Variables}
+As seen earlier, the family of sub-Gaussian random variables encapsulate a vast range of distributions - bounded and Gaussian. To recall, a sub-Gaussian random variable is one where the tails decay at the rate of \(\exp(-ct^{2})\) (or faster). But what about distributions whose tails decay slower.
+
+\begin{minipage}{0.29\linewidth}
+\begin{tikzpicture}[scale=0.5]
+\centering
+\begin{axis}[axis lines=left, xlabel=\(t\), ylabel=\(f(t)\)]
+\addplot[domain=1:6, samples=200, color=red]{exp(-x^2)};
+\addlegendentry{\(e^{-x^{2}}\)}
+\addplot[domain=1:6, samples=200, color=blue]{exp(-x)};
+\addlegendentry{\(e^{-x}\)}
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}{0.7\linewidth}
+For instance, the exponential random variable \(X \sim \mathrm{Exp}(\lambda)\) satisfies:
+\begin{equation*}
+\Pr(X > t) = e^{-\lambda t}
+\end{equation*}
+
+This doesn't decay as fast as the \emph{sub-Gaussian rate}, as shown in the plot on the right, and therefore is said to have a \emph{heavier} tail than a Gaussian.
+\end{minipage}
+
+Distributions such as these occur more commonly that just the exponential distribution in practice. For instance, let's consider the square of a sub-Gaussian random variable. Let \(Y = X^{2}\) where \(X\) is sub-Gaussian with sub-Gaussian norm \(\|X\|_{\psi_{2}} \leq K\). Then:
+\begin{equation*}
+\Pr(Y > t) = \Pr(|X| > \sqrt{t}) \leq 2\exp\left(-\frac{ct}{K^{2}}\right)
+\end{equation*}
+which shows that \(Y\) has a tail heavier than a sub-Gaussian. Such distributions are called \emph{Sub-Exponential distributions}. Below is a lemma similar to Lemma \ref{lem:sub-gauss-equiv} for sub-Exponential distributions that establishes equivalence properties.
+
+\begin{lemma}
+Let \(X\) be a sub-Exponential random variable. The following statements are equivalent:
+\begin{description}
+\item [(i)] \(\Pr(|X| > t) \leq 2\exp\left(-\frac{t}{K_{1}}\right)\) for all \(t \geq 0\)
+\item [(ii)] \(\|X\|_{L^{p}} \leq K_{2}p\) for all \(p \geq 1\)
+\item [(iii)] \(\Exp[\exp(\lambda|X|)] \leq \exp(K_{3}\lambda)\) for all \(\lambda \in \left[0, \frac{1}{K_{3}}\right]\)
+\item [(iv)] \(\Exp\left[\exp\left(\frac{|X|}{K_{4}}\right)\right] \leq 2\)
+\item [(v)] \(\Exp[\exp(\lambda X)] \leq \exp(K_{5}^{2}\lambda^{2})\) for all \(\lambda\) such that \(|\lambda| \leq \frac{1}{K_{5}}\)
+\end{description}
+\end{lemma}
 
 \newpage
 \bibliography{main}
