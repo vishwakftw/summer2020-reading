@@ -1346,8 +1346,19 @@ where in step \((i)\) we have used the fact that \(\Exp[X]\) is a constant rando
 \end{equation*}
 \end{proof}
 
+\begin{remark}
+Now, unlike Lemma \ref{lem:l2-centering}, \(C > 1\). This can be proven by showing that there exists a random variable such that \(\|X - \Exp[X]\|_{\psi_{2}} > \|X\|_{\psi_{2}}\). Consider a random variable over \(\{-1, +1\}\) which takes \(-1\) with probability \(0.25\) and \(1\) with probability \(0.75\). A simple calculation reveals that \(\Exp[X] = 0.5\). Now:
+\begin{equation*}
+\Exp\left[\exp\left(\frac{(X - \Exp[X])^{2}}{t^{2}}\right)\right] = 0.75 \cdot e^{\frac{0.25}{t^{2}}} + 0.25 \cdot e^{\frac{2.25}{t^{2}}}
+\end{equation*}
+Now, set \(e^{\frac{0.25}{t^{2}}} = x\) to get \(0.75x + 0.25x^{9} - 2 \leq 0\). Plotting reveals that \(x \leq 1.18\), which implies that \(\|X - \Exp[X]\|_{\psi_{2}} \approx \frac{0.5}{\sqrt{\log(1.18)}} \approx 1.229\).
+
+However, we know that \(\|X\|_{\psi_{2}} = \frac{1}{\sqrt{\log(2)}} = 1.201\), and therefore proves the assertion.
+\end{remark}
+
 \subsubsection{Auxiliary Lemmata}
 \begin{lemma}
+\label{lem:l2-centering}
 For any random variable \(X\), we have:
 \begin{equation*}
 \|X - \Exp[X]\|_{L^{2}} \leq \|X\|_{L^{2}}
@@ -1400,9 +1411,112 @@ Let \(X\) be a sub-Exponential random variable. The following statements are equ
 \item [(ii)] \(\|X\|_{L^{p}} \leq K_{2}p\) for all \(p \geq 1\)
 \item [(iii)] \(\Exp[\exp(\lambda|X|)] \leq \exp(K_{3}\lambda)\) for all \(\lambda \in \left[0, \frac{1}{K_{3}}\right]\)
 \item [(iv)] \(\Exp\left[\exp\left(\frac{|X|}{K_{4}}\right)\right] \leq 2\)
-\item [(v)] \(\Exp[\exp(\lambda X)] \leq \exp(K_{5}^{2}\lambda^{2})\) for all \(\lambda\) such that \(|\lambda| \leq \frac{1}{K_{5}}\)
+\item [(v)] \(\Exp[\exp(\lambda X)] \leq \exp(K_{5}^{2}\lambda^{2})\) for all \(\lambda\) such that \(|\lambda| \leq \frac{1}{K_{5}}\) (if \(\Exp[X] = 0\))
 \end{description}
 \end{lemma}
+
+\begin{proof}
+\begin{description}
+\item [(i) \(\Rightarrow\) (ii)] We use the corollary \ref{cor:p-abs-moment}, we have that:
+\begin{align*}
+\Exp[|X|^{p}] &= \int_{0}^{\infty} pt^{p-1}\Pr(|X| > t) dt \\
+&\leq \int_{0}^{\infty} 2pt^{p-1}\exp\left(-\frac{t}{K_{1}}\right) dt \\
+&= 2pK_{1}^{p}\int_{0}^{\infty} u^{p-1}\exp(-u) du \\
+&= 2pK_{1}^{p} \Gamma(p) = 2K_{1}^{p} p! \leq (2K_{1})^{p} p^{p}
+\end{align*}
+
+Therefore:
+\begin{equation*}
+\|X\|_{L^{p}} = \sqrt[p]{\Exp[|X|^{p}]} \leq K_{2} p
+\end{equation*}
+for \(K_{2} = 2K_{1}\).
+
+\item [(ii) \(\Rightarrow\) (iii)] The expansion of \(e^{x}\) yields:
+\begin{align*}
+\Exp[\exp(\lambda |X|)] &= \sum_{k=0}^{\infty} \frac{\lambda^{k} \Exp[|X|^{k}]}{k!} \\
+&\leq \sum_{k=0}^{\infty} \frac{\lambda^{k} (2K_{1})^{k} k!}{k!} \\
+&\leq \sum_{k=0}^{\infty} (2\lambda K_{1})^{k}
+\end{align*}
+
+This is geometric progression that converges if \(|2\lambda K_{1}| \leq 1 \Leftrightarrow |\lambda| \leq \frac{1}{2K_{1}}\). Now we have:
+\begin{equation*}
+\Exp[\exp(\lambda |X|)] \leq \frac{1}{1 - 2\lambda K_{1}} \overset{(i)}\leq e^{K_{3}\lambda}
+\end{equation*}
+for \(K_{3} = 4K_{1}\) and Step \((i)\) uses Lemma \ref{lem:geometric-series-exponential}.
+
+\item [(iii) \(\Rightarrow\) (iv)] Choose \(\lambda = \frac{1}{2K_{3}}\) to get:
+\begin{equation*}
+\Exp\left[\exp\left(\frac{|X|}{2K_{3}}\right)\right] \leq \exp(\nicefrac{1}{2}) \leq 2
+\end{equation*}
+for \(K_{4} = 2K_{3}\).
+
+\item [(iv) \(\Rightarrow\) (i)] Note that:
+\begin{equation*}
+\Pr(|X| > t) = \Pr\left(\frac{|X|}{K_{4}} > \frac{t}{K_{4}}\right) = \Pr\left(\exp\left(\frac{|X|}{K_{4}}\right) > \exp\left(\frac{t}{K_{4}}\right)\right) \leq e^{\frac{-t}{K_{4}}}\Exp\left[\exp\left(\frac{X}{K_{4}}\right)\right] \leq 2e^{-\frac{t}{K_{4}}}
+\end{equation*}
+
+\item [(ii) \(\Rightarrow\) (v)] Again from the expansion of \(e^{x}\), we have:
+\begin{align*}
+\Exp[\exp(\lambda X)] &= \sum_{k=0}^{\infty} \frac{\lambda^{k}}{k!}\Exp[X^{k}] \\
+&\leq 1 + \sum_{k=2} \frac{\lambda^{k}}{k!}\Exp[|X|^{k}] \\
+&\overset{(i)}\leq 1 + \sum_{k=1}^{\infty} \frac{2^{k}\lambda^{2k}}{(2k)!}\Exp[|X|^{2k}] \\
+&\leq 1 + \sum_{k=1}^{\infty} 2^{2k}\lambda^{2k} K_{1}^{2k} \\
+&\leq \sum_{k=0}^{\infty} (2\lambda K_{1})^{2k}
+\end{align*}
+where Step \((i)\) follows from Lemma \ref{lem:odd-even-moments}.
+
+The infinite geometric series converges if \(|\lambda| \leq \frac{1}{2K_{1}}\). Under this condition:
+\begin{equation*}
+\Exp[\exp(\lambda X)] \leq \frac{1}{1 - (2\lambda K_{1})^{2}} \leq e^{8\lambda^{2}K_{1}^{2}} = e^{K_{5}^{2}\lambda^{2}}
+\end{equation*}
+
+where \(K_{5} = 2K_{1}\).
+
+\item [(v) \(\Rightarrow\) (ii)] We will make use of this interesting inequality (refer Lemma \ref{lem:power-sum-of-exp-bound} for a proof)
+\begin{equation*}
+|x|^{p} \leq p^{p}(e^{x} + e^{-x})
+\end{equation*}
+
+\begin{equation*}
+\Exp[|X|^{p}] \leq p^{p}\Exp[e^{X}] + p^{p}\Exp[e^{-X}] \leq p^{p}\exp(K_{5}^{2}) + p^{p}\exp(K_{5}^{2}) \leq 2e^{K_{5}^{2}}p^{p} \Rightarrow \|X\|_{L^{p}} \leq K_{6}p
+\end{equation*}
+for \(K_{6} = 2e^{K_{5}^{2}}\).
+\end{description}
+\end{proof}
+
+\begin{remark}
+Again, note that when the variable is not necessarily mean zero, we have a weaker corollary like in the sub-Gaussian case. We state it without proof below.
+\begin{corollary}
+Let \(X\) be a non-zero mean sub-Exponential random variable satisfying \(\Pr(|X| > t) \leq 2\exp\left(-\frac{t}{K_{1}}\right)\). Then we have that:
+\begin{equation*}
+\Exp[\exp(\lambda X)] \leq 2\exp(\lambda^{2}K_{5}^{2})
+\end{equation*}
+\end{corollary}
+
+Also, it is not clear why \(\lambda\) is required to be positive in \textbf{(iii)}.
+\end{remark}
+
+\comprule
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+\label{lem:power-sum-of-exp-bound}
+For any \(x \in \real\) and \(p > 0\), we have:
+\begin{equation*}
+|x|^{p} \leq p^{p}(e^{x} + e^{-x})
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+e^{x} + e^{-x} &= \left(e^{\frac{x}{p}}\right)^{p} + \left(e^{-\frac{x}{p}}\right)^{p} \\
+&\geq 2\left(\frac{e^{\frac{x}{p}} + e^{-\frac{x}{p}}}{2}\right)^{p} \\
+&\geq \left(\frac{e^{\frac{x}{p}} + e^{-\frac{x}{p}}}{2}\right)^{p} \\
+&= \cosh^{p}\left(\frac{x}{p}\right) \\
+&\geq \left(\frac{|x|}{p}\right)^{p}
+\end{align*}
+where in the final step we have used \(\cosh(x) \geq |x|\) for \(x \in \real\).
+\end{proof}
 
 \newpage
 \bibliography{main}
