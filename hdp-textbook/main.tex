@@ -1374,7 +1374,7 @@ For any random variable \(X\), we have:
 \end{align*}
 \end{proof}
 
-\subsection{Sub-Exponential Random Variables}
+\subsection{Sub-Exponential Random Variables, Orlicz spaces}
 As seen earlier, the family of sub-Gaussian random variables encapsulate a vast range of distributions - bounded and Gaussian. To recall, a sub-Gaussian random variable is one where the tails decay at the rate of \(\exp(-ct^{2})\) (or faster). But what about distributions whose tails decay slower.
 
 \begin{minipage}{0.29\linewidth}
@@ -1405,6 +1405,7 @@ Distributions such as these occur more commonly that just the exponential distri
 which shows that \(Y\) has a tail heavier than a sub-Gaussian. Such distributions are called \emph{Sub-Exponential distributions}. Below is a lemma similar to Lemma \ref{lem:sub-gauss-equiv} for sub-Exponential distributions that establishes equivalence properties.
 
 \begin{lemma}
+\label{lem:sub-exp-equiv}
 Let \(X\) be a sub-Exponential random variable. The following statements are equivalent:
 \begin{description}
 \item [(i)] \(\Pr(|X| > t) \leq 2\exp\left(-\frac{t}{K_{1}}\right)\) for all \(t \geq 0\)
@@ -1493,10 +1494,95 @@ Let \(X\) be a non-zero mean sub-Exponential random variable satisfying \(\Pr(|X
 \end{equation*}
 \end{corollary}
 
-Also, it is not clear why \(\lambda\) is required to be positive in \textbf{(iii)}.
+\TODO Also, it is not clear why \(\lambda\) is required to be positive in \textbf{(iii)}.
 \end{remark}
 
 \comprule
+
+Analogous to the sub-Gaussian norm, we can define a \emph{sub-Exponential norm} for sub-Exponential random variables. Formally, we define the sub-Exponential norm of a sub-Exponential random variable \(X\) as:
+\begin{equation*}
+\|X\|_{psi_{1}} = \inf\left\{t > 0 : \Exp\left[\exp\left(\frac{|X|}{t}\right)\right] \leq 2 \right\}
+\end{equation*}
+
+Just as noted earlier for sub-Gaussian random variables, we see that the sub-Exponential norm is merely the tighest constant in property \textbf{(iii)} in Lemma \ref{lem:sub-exp-equiv}. Let us restate the equivalences in Lemma \ref{lem:sub-exp-equiv} in terms of this norm:
+
+\begin{description}
+\item [(i)] \(\Pr\left(|X| > t\right) \leq 2\exp\left(-\frac{C_{1}t}{\|X\|_{\psi_{1}}}\right)\)
+\item [(ii)] \(\|X\|_{L^{p}} \leq C_{2}\|X\|_{\psi_{1}}p\) for all \(p \geq 1\)
+\item [(iii)] \(\Exp\left[\exp(\lambda|X|)\right] \leq \exp(C_{3}\lambda\|X\|_{\psi_{1}})\) for all \(\lambda \in \left[0, \frac{1}{C_{3}\|X\|_{\psi_{1}}}\right]\)
+\item [(iv)] If \(\Exp[X] = 0\), then \(\Exp[\exp(\lambda X)] \leq \exp(C_{4}\lambda^{2}\|X\|_{\psi_{1}}^{2})\) for all \(\lambda\) such that \(|\lambda| \leq \frac{1}{C_{4} \|X\|_{\psi_{1}}}\)
+\end{description}
+where \(C_{1}, C_{2}, C_{3}, C_{4}\) are universal constants.
+
+As shown via an example earlier, we know that the square of a sub-Gaussian random varialbe is a sub-Exponential random variable. Remarkably, the sub-Gaussian and sub-Exponential norms of the variable and its square are directly related as shown in the lemma below.
+
+\begin{lemma}
+\label{lem:psi-1-psi-2-norm}
+Let \(X\) be a sub-Gaussian random variable. Then:
+\begin{equation*}
+\|X\|^{2}_{\psi_{2}} = \|X^{2}\|_{\psi_{1}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\(\|X\|_{\psi_{2}}\) is the infimum of the values taken by \(t > 0\) that satisfy \(\Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] \leq 2\). Similarly, \(\|X\|_{\psi_{1}}\) is the infimum of the values taken by \(t > 0\) that satisfy \(\Exp\left[\exp\left(\frac{|X|}{t}\right)\right] \leq 2\) which is equivalent to \(\Exp\left[\exp\left(\frac{X^{2}}{t^{2}}\right)\right] \leq 2\), and the statement is proved.
+\end{proof}
+
+We can generalize further to product of two different sub-Gaussian random variables.
+\begin{lemma}
+Let \(X\) and \(Y\) be two sub-Gaussian random variables. Then \(XY\) is a sub-exponential random variable. Moreover:
+\begin{equation*}
+\|XY\|_{\psi_{1}} \leq \|X\|_{\psi_{2}} \|Y\|_{\psi_{2}}
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+\TODO
+%\begin{align*}
+%\Exp\left[\exp\left(\frac{|XY|}{\|XY\|_{\psi_{1}}}\right)\right] &\overset{(i)}\leq \Exp\left[\exp\left(\frac{X^{2}}{2\|XY\|_{\psi_{1}}}\right)\exp\left(\frac{Y^{2}}{2\|XY\|_{\psi_{1}}}\right)\right] \\
+%&\overset{(ii)}\leq \frac{1}{2}\left(\Exp\left[\exp\left(\frac{X^{2}}{\|XY\|_{\psi_{1}}}\right)\right] + \Exp\left[\exp\left(\frac{Y^{2}}{\|XY\|_{\psi_{1}}}\right)\right]\right) \\
+%&\overset{(iii)}\leq \frac{1}{2}\left(\Exp\left[\exp\left(\frac{X^{2}}{\|X\|_{\psi_{2}}^{2}}\right)\right] + \Exp\left[\exp\left(\frac{Y^{2}}{\|Y\|_{\psi_{2}}^{2}}\right)\right]\right) \leq \frac{1}{2}\left(2 + 2\right) = 2
+%\end{align*}
+
+%where Step \((i)\) uses the AM-GM inequality \(|ab| \leq \frac{a^{2} + b^{2}}{2}\) with \(a = X, b = Y\), and Step \((ii)\) also uses the AM-GM inequality with \(a = \exp\left(\frac{X^{2}}{\|XY\|_{\psi_{1}}}\right), b = \exp\left(\frac{Y^{2}}{\|XY\|_{\psi_{1}}}\right)\).
+\end{proof}
+
+Now, we turn to a version of the centering lemma for the sub-Exponential norm.
+\begin{lemma}
+Let \(X\) be a sub-Exponential random variable. Then \(\|X - \Exp[X]\|_{\psi_{1}} \leq C\|X\|_{\psi_{1}}\).
+\end{lemma}
+
+\begin{proof}
+The proof is the same as the proof for the centering lemma for the sub-Gaussian norm. Since \(\|.\|_{\psi_{1}}\) is a norm:
+\begin{align*}
+\|X - \Exp[X]\|_{\psi_{1}} &\leq \|X\|_{\psi_{1}} + \|\Exp[X]\|_{\psi_{1}} \\
+&\leq \|X\|_{\psi_{1}} + \frac{|\Exp[X]|}{\log(2)} \\
+&\leq \|X\|_{\psi_{1}} + \frac{\Exp[|X|]}{\log(2)} \\
+&\leq \|X\|_{\psi_{1}} + C_{1}\|X\|_{\psi_{1}} = C\|X\|_{\psi_{1}}
+\end{align*}
+\end{proof}
+
+\begin{remark}
+Do we have that \(\|X - \Exp[X]\|_{\psi_{1}} > \|X\|_{\psi_{1}}\) for some sub-Exponential random variable?
+\end{remark}
+
+\comprule
+
+There is a lot of commonality in the properties of sub-Gaussian and sub-Exponential distributions, so naturally, can we generalize this any further? The answer is yes, and introduces us to \emph{Orlicz spaces}. First, we define an \emph{Orlicz function}, which is a convex, increasing function \(\psi : [0, \infty) \to [0, \infty)\) satisfying \(\psi(0) = 0\) and \(\lim\limits_{x \to \infty} \psi(x) = \infty\).
+
+The \emph{Orlicz norm} of a random variable \(X\) is:
+\begin{equation*}
+\|X\|_{\psi} = \inf\left\{t > 0 : \Exp\left[\psi\left(\frac{|X|}{t}\right)\right] \leq 1\right\}
+\end{equation*}
+
+Note that for \(\psi(x) = e^{x^{2}} - 1\), we retrieve the sub-Gaussian norm, and for \(\psi(x) = e^{x} - 1\), we obtain the sub-Exponential norm. The \emph{Orlicz space} is a collection of random variables that have finite \emph{Orlicz norm}. That is: \(L_{\psi}(\Omega, \Sigma, \mathbb{P}) = \{X \in (\Omega, \Sigma, \mathbb{P}) : \|X\|_{\psi} < \infty\}\).
+
+The Orlicz norm is a valid norm over the Orlicz space, and therefore satisfies:
+\begin{itemize}
+\item \(\|\mathbf{0}\|_{\psi} = 0\)
+\item \(\|\alpha X\|_{\psi} = \alpha \|X\|_{\psi}\)
+\item \(\|X + Y\|_{\psi} \leq \|X\|_{\psi} + \|Y\|_{\psi}\).
+\end{itemize}
 
 \subsubsection{Auxiliary Lemmata}
 \begin{lemma}
