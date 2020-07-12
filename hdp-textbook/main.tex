@@ -224,6 +224,7 @@ For any random variable \(X\):
 
 Classical inequalities: Markov and Chebyshev's:
 \begin{lemma}[Markov's Inequality]
+\label{lem:markov}
 Consider a non-negative random variable \(X\). Then the tails of \(X\) can be bounded as:
 \begin{equation*}
 \Pr(X > t) \leq \frac{\Exp[X]}{t}
@@ -245,7 +246,7 @@ Consider a random variable \(X\). Then the probability of deviation from the exp
 \end{corollary}
 
 \begin{proof}
-Take \(Y = |X - \Exp[X]|\) as the random variable as apply Markov's inequality:
+Take \(Y = |X - \Exp[X]|\) as the random variable as apply Markov's inequality (Lemma \ref{lem:markov}):
 \begin{equation*}
 \Pr(Y > t) = \Pr(Y^{2} > t^{2}) \leq \frac{\Exp[(X - \Exp[X])^{2}]}{t^{2}}
 \end{equation*}
@@ -459,7 +460,7 @@ Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of \(n\) i.i.d. Rademacher random vari
 \end{theorem}
 
 \begin{proof}
-Let's begin with Markov's inequality:
+Let's begin with Markov's inequality (Lemma \ref{lem:markov}):
 \begin{align*}
 \Pr\left(\sum_{i=1}^{n} a_{i}X_{i} > t\right) &= \Pr\left(\exp\left(s \cdot \sum_{i=1}^{n} a_{i}X_{i}\right) > \exp(s \cdot t)\right) \qquad (s > 0)\\
 &\overset{(i)}\leq \frac{\Exp\left[\exp\left(s \cdot \sum\limits_{i=1}^{n} a_{i}X_{i}\right)\right]}{\exp(st)} \\
@@ -543,7 +544,7 @@ The standard series of steps used in the proof of Theorem \ref{thm:rademacher-ho
 &\leq \frac{1}{\exp(st)}\prod_{i=1}^{n}\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]
 \end{align*}
 
-To bound \(\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]\): let \(Z_{i} = X_{i} - \Exp[X_{i}]\) for \(i \in [n]\). Therefore, we focus on the quantity \(\Exp\left[\exp(s \cdot Z_{i})\right]\). Consider \(Z'_{i}\) to be an independent copy of \(Z_{i}\)\footnote{The proof is adapted from \citep[Example 2.3]{wainwright2019high}}.
+To bound \(\Exp\left[\exp(s \cdot (X_{i} - \Exp[X_{i}]))\right]\): let \(Z_{i} = X_{i} - \Exp[X_{i}]\) for \(i \in [n]\). Therefore, we focus on the quantity \(\Exp\left[\exp(s \cdot Z_{i})\right]\). Adapting the proof from \citep[Example 2.3]{wainwright2019high}, consider \(Z'_{i}\) to be an independent copy of \(Z_{i}\).
 \begin{equation*}
 \Exp_{Z_{i}}\left[\exp(s \cdot Z_{i})\right] = \Exp_{Z_{i}}\left[\exp(s \cdot (Z_{i} - \Exp_{Z'_{i}}[Z'_{i}]))\right] = \Exp_{Z_{i}}\left[\exp(s \cdot (\Exp_{Z'_{i}}[Z_{i} - Z'_{i}]))\right] \leq \Exp_{Z_{i}, Z'_{i}}\left[\exp\left(s \cdot (Z_{i} - Z'_{i})\right)\right]
 \end{equation*}
@@ -1206,11 +1207,21 @@ Now, by the series expansion:
 In Lemma \ref{lem:sum-sub-gauss}, we saw that a sum of independent sub-Gaussian random variables is sub-Gaussian. Following the remark from earlier, we have the generalized Hoeffding's inequality:
 \begin{corollary}
 \label{cor:hoeffding-sub-gaussian}
-Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian random variables with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\). Then:
+Let \(\{X_{i}\}_{i=1}^{n}\) be a sequence of independent, zero mean sub-Gaussian random variables with sub-Gaussian norms \(\{\|X_{i}\|_{\psi_{2}}\}_{i=1}^{n}\), and \(a \in \real^{n}\) be a vector. Then for \(t \geq 0\):
 \begin{equation*}
 \Pr\left(\left|\sum_{i=1}^{n} a_{i}X_{i}\right| > t\right) \leq 2\exp\left(-\frac{ct^{2}}{\sum\limits_{i=1}^{n}a_{i}\|X_{i}\|_{\psi_{2}}^{2}}\right) \leq 2\exp\left(-\frac{ct^{2}}{\|a\|_{2}^{2}K^{2}}\right)
 \end{equation*}
 \end{corollary}
+
+\begin{remark}
+Set \(a_{i} = \frac{1}{n}\) for all \(i \in [n]\) gives a mean concentration inequality like so:
+\begin{equation*}
+\Pr\left(|\bar{X}_{n}| > t\right) \leq 2\exp\left(-\frac{cnt^{2}}{K^{2}}\right)
+\end{equation*}
+where \(\bar{X}_{n}\) is the mean of the \(n\) random variables \(\{X_{i}\}_{i=1}^{n}\).
+\end{remark}
+
+\comprule
 
 Khintchine inequalities are a collection of inequalities providing upper and lower bounds for \(L^{p}\) norms of linear combination of independent sub-Gaussian random variables. We state them formally in Lemmas \ref{lem:khintchine-p-geq-2} and \ref{lem:khintchine-p-1}.
 
@@ -1443,7 +1454,7 @@ This is geometric progression that converges if \(|2\lambda K_{1}| \leq 1 \Leftr
 \begin{equation*}
 \Exp[\exp(\lambda |X|)] \leq \frac{1}{1 - 2\lambda K_{1}} \overset{(i)}\leq e^{K_{3}\lambda}
 \end{equation*}
-for \(K_{3} = 4K_{1}\) and Step \((i)\) uses Lemma \ref{lem:geometric-series-exponential}.
+for \(K_{3} = 4K_{1}\) and Step \((i)\) uses Lemma \ref{lem:geometric-series-exponential} with \(\lambda \in \left[0, \frac{1}{2K_{1}}\right]\).
 
 \item [(iii) \(\Rightarrow\) (iv)] Choose \(\lambda = \frac{1}{2K_{3}}\) to get:
 \begin{equation*}
@@ -1493,8 +1504,6 @@ Let \(X\) be a non-zero mean sub-Exponential random variable satisfying \(\Pr(|X
 \Exp[\exp(\lambda X)] \leq 2\exp(\lambda^{2}K_{5}^{2})
 \end{equation*}
 \end{corollary}
-
-\TODO Also, it is not clear why \(\lambda\) is required to be positive in \textbf{(iii)}.
 \end{remark}
 
 \comprule
@@ -1584,6 +1593,8 @@ The Orlicz norm is a valid norm over the Orlicz space, and therefore satisfies:
 \item \(\|X + Y\|_{\psi} \leq \|X\|_{\psi} + \|Y\|_{\psi}\).
 \end{itemize}
 
+Note that there is a natural hierarchy between \(L_{p}\)-spaces as follows. \(L_{\infty} \subset L_{\psi_{2}}\) because any distribution with bounded supremum is sub-Gaussian. \(L_{\psi_{2}} \subset L_{p}\) because any sub-Gaussian distribution has bounded \(L^{p}\) norm.
+
 \subsubsection{Auxiliary Lemmata}
 \begin{lemma}
 \label{lem:power-sum-of-exp-bound}
@@ -1603,6 +1614,120 @@ e^{x} + e^{-x} &= \left(e^{\frac{x}{p}}\right)^{p} + \left(e^{-\frac{x}{p}}\righ
 \end{align*}
 where in the final step we have used \(\cosh(x) \geq |x|\) for \(x \in \real\).
 \end{proof}
+
+\subsection{Bernstein's Inequality for sub-Exponential random variables}
+With the tails properties of a sub-Gaussian random variable, we could derive concentration inequalities for sums of sub-Gaussian random variables. Analogously, we will derive concentration inequalities for sub-Exponential random variables. The first is \emph{Bernstein's inequality}, as stated below:
+
+\begin{theorem}
+\label{thm:bernstein-sub-exp}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a collection of \(n\) independent, zero-mean, sub-Exponential random variables. Then for \(t \geq 0\), we have:
+\begin{equation*}
+\Pr\left(\left|\sum_{i=1}^{n}X_{i}\right| > t\right) \leq 2\exp\left(-c \min\left\{\frac{t^{2}}{\sum\limits_{i=1}^{n}\|X_{i}\|_{\psi_{1}}^{2}}, \frac{t}{\max\limits_{i} \|X_{i}\|_{\psi_{1}}}\right\}\right)
+\end{equation*}
+where \(c > 0\) is a universal constant.
+\end{theorem}
+
+\begin{proof}
+We will consider the event \(\sum\limits_{i=1}^{n} X_{i} > t\) for convenience.
+
+By Markov's inequality (Lemma \ref{lem:markov}), and \(\lambda > 0\),
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} X_{i} > t\right) = \Pr\left(\lambda \sum_{i=1}^{n} X_{i} > \lambda t \right) = \Pr\left(\exp\left(\lambda \sum_{i=1}^{n}X_{i}\right) > \exp(\lambda t)\right) \leq e^{-\lambda t} \Exp\left[\exp\left(\lambda \sum_{i=1}^{n} X_{i}\right)\right]
+\end{equation*}
+
+Since \(\{X_{i}\}_{i=1}^{n}\) are independent:
+\begin{equation*}
+\Exp\left[\exp\left(\lambda \sum_{i=1}^{n} X_{i}\right)\right] = \prod_{i=1}^{n} \Exp\left[e^{\lambda X_{i}}\right]
+\end{equation*}
+
+Using \textbf{(v)} from Lemma \ref{lem:sub-exp-equiv}, we have that:
+\begin{equation*}
+\Exp\left[\exp(\lambda X_{i})\right] \leq \exp(C \lambda^{2} \|X_{i}\|_{\psi_{1}}^{2})
+\end{equation*}
+for \(|\lambda| \leq \frac{1}{C\|X_{i}\|_{\psi_{1}}}\). And therefore:
+\begin{equation*}
+e^{-\lambda t} \Exp\left[\exp\left(\lambda \sum_{i=1}^{n} X_{i}\right)\right] \leq \exp\left(-\lambda t + C \lambda^{2} \sum_{i=1}^{n}\|X_{i}\|_{\psi_{1}}^{2}\right)
+\end{equation*}
+for \(\lambda \in \left(0, \frac{1}{C \max_{i}\|X_{i}\|_{\psi_{1}}}\right)\).
+
+\(\lambda\) that minimizes the inequality is \(-\frac{t}{2 C \sum\limits_{i=1}^{n}\|X_{i}\|_{\psi_{1}}^{2}}\). However, \(\lambda < \frac{1}{C \max_{i}\|X_{i}\|_{\psi_{1}}}\), and this gives rise to \(\lambda = \min\left\{\frac{1}{C\max_{i} \|X_{i}\|_{\psi_{1}}}, -\frac{t}{2 \sum\limits_{i=1}^{n}\|X_{i}\|_{\psi_{1}}^{2}}\right\}\), we gives the result:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} X_{i} > t\right) \leq \exp\left(-c \min\left\{\frac{t^{2}}{\sum\limits_{i=1}^{n}\|X_{i}\|_{\psi_{1}}^{2}}, \frac{t}{\max\limits_{i} \|X_{i}\|_{\psi_{1}}}\right\}\right)
+\end{equation*}
+
+By symmetry, we have:
+\begin{equation*}
+\Pr\left(\left|\sum_{i=1}^{n} X_{i}\right| > t\right) \leq 2\exp\left(-c \min\left\{\frac{t^{2}}{\sum\limits_{i=1}^{n}\|X_{i}\|_{\psi_{1}}^{2}}, \frac{t}{\max\limits_{i} \|X_{i}\|_{\psi_{1}}}\right\}\right)
+\end{equation*}
+\end{proof}
+
+Similar to the sub-Gaussian case, we have an immediate corollary for linear combination of sub-Exponential random variables:
+\begin{corollary}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a collection of \(n\) independent, zero-mean, sub-Exponential random variables and let \(a \in \real^{n}\) be a vector. Then for \(t \geq 0\), we have:
+\begin{multline*}
+\Pr\left(\left|\sum_{i=1}^{n} a_{i}X_{i}\right| > t\right) \leq 2\exp\left(-c \min\left\{\frac{t^{2}}{\sum\limits_{i=1}^{n}a_{i}^{2}\|X_{i}\|_{\psi_{1}}^{2}}, \frac{t}{\max\limits_{i} a_{i}\|X_{i}\|_{\psi_{1}}}\right\}\right) \\\leq 2\exp\left(-c \min\left\{\frac{t^{2}}{\|a\|_{2}^{2}K^{2}}, \frac{t}{K\|a\|_{\infty}}\right\}\right)
+\end{multline*}
+where \(K = \max\limits_{i} \|X_{i}\|_{\psi_{1}}\).
+\end{corollary}
+
+\begin{remark}
+Set \(a_{i} = \frac{1}{n}\) for all \(i \in [n]\) gives a mean concentration inequality like so:
+\begin{equation*}
+\Pr\left(|\bar{X}_{n}| > t\right) \leq 2\exp\left(-c\cdot n\min\left\{\frac{t^{2}}{K^{2}}, \frac{t}{K}\right\}\right)
+\end{equation*}
+where \(\bar{X}_{n}\) is the mean of the \(n\) random variables \(\{X_{i}\}_{i=1}^{n}\).
+
+Looking at this inequality careful reveals two phases: a sub-Exponential phase and a sub-Gaussian phase. When \(t \leq K\), we have the sub-Gaussian phase - where the tail decays \(\propto e^{-t^{2}}\), and when \(t > K\), we have a sub-Exponential phase - where the tail decays \(\propto e^{-t}\).
+\end{remark}
+
+\comprule
+
+While bounded random variables are sub-Gaussian, and hence sub-Exponential, we can use the same result from above to provide concentration inequalities for sums of these random variables. However, a tighter analysis is possible, which is performed in the following theorem.
+
+\begin{theorem}
+\label{thm:bernstein-bounded-rv}
+Let \(\{X_{i}\}_{i=1}^{n}\) be a set of independent, zero-mean random variables such that \(|X_{i}| \leq K\) for all \(i \in [n]\). Then for \(t \geq 0\), we have:
+\begin{equation*}
+\Pr\left(\left|\sum_{i=1}^{n}X_{i}\right| > t\right) \leq 2\exp\left(-\frac{\nicefrac{t^{2}}{2}}{\sigma^{2} + \nicefrac{Kt}{3}}\right)
+\end{equation*}
+where \(\sigma^{2} = \sum\limits_{i=1}^{n}\Var(X_{i})\).
+\end{theorem}
+
+\begin{proof}
+Just as done before, we will use Markov's inequality (Lemma \ref{lem:markov}) and \(\lambda > 0\) to get:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} X_{i} > t\right) = \Pr\left(\lambda \sum_{i=1}^{n} X_{i} > \lambda t \right) = \Pr\left(\exp\left(\lambda \sum_{i=1}^{n}X_{i}\right) > \exp(\lambda t)\right) \leq e^{-\lambda t} \Exp\left[\exp\left(\lambda \sum_{i=1}^{n} X_{i}\right)\right]
+\end{equation*}
+
+Now, by Lemma \ref{lem:bounded-rv-mgf-bound} we have that:
+\begin{equation*}
+\Exp\left[\exp(\lambda X_{i})\right] \leq \exp(g(\lambda) \Exp[X_{i}^{2}])
+\end{equation*}
+where \(g(\lambda) = \frac{\nicefrac{\lambda^{2}}{2}}{1 - \nicefrac{|\lambda|K}{3}}\)for \(|\lambda| \leq \frac{3}{K}\).
+
+This gives:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} X_{i} > t\right) \leq \exp\left(-\lambda t + g(\lambda) \sigma^{2}\right)
+\end{equation*}
+We intend on finding the \(\lambda\) that minimizes the RHS for the tighest bound. Now:
+\begin{equation*}
+\inf_{\lambda > 0} g(\lambda) \sigma^{2} - \lambda t = -\sup_{\lambda > 0} \lambda t - g(\lambda) \sigma^{2} \overset{(i)}\leq -\frac{\nicefrac{t^{2}}{2}}{\sigma^{2} + \nicefrac{Kt}{3}}
+\end{equation*}
+where in Step \((i)\) we have used Lemma \ref{lem:special-func-bernstein-bound} and this gives:
+\begin{equation*}
+\Pr\left(\sum_{i=1}^{n} X_{i} > t\right) \leq \exp\left(-\frac{\nicefrac{t^{2}}{2}}{\sigma^{2} + \nicefrac{Kt}{3}}\right)
+\end{equation*}
+By symmetry, we obtain the final result.
+\end{proof}
+
+\subsubsection{Auxiliary Lemmata}
+\begin{lemma}
+\label{lem:bounded-rv-mgf-bound}
+\end{lemma}
+
+\begin{lemma}
+\label{lem:special-func-bernstein-bound}
+\end{lemma}
 
 \newpage
 \bibliography{main}
